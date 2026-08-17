@@ -3,922 +3,1129 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GES Quiz App</title>
+<title>GES 112 Quiz App</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0a0a0f; --surface:#111118; --card:#18181f; --border:#2a2a38;
-  --accent:#7c6aff; --accent2:#ff6a7c; --green:#4fffb0; --yellow:#ffe44f;
-  --text:#e8e8f0; --muted:#6b6b80; --radius:16px;
+:root{
+  --bg:#08080f;--surface:#0f0f1a;--card:#161622;--border:#22223a;
+  --accent:#7b6cff;--a2:#ff6b8a;--green:#00e5a0;--yellow:#ffd24d;
+  --text:#ececf5;--muted:#5c5c7a;--r:14px;
 }
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden}
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background-image:linear-gradient(rgba(124,106,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(124,106,255,.03) 1px,transparent 1px);
-  background-size:40px 40px;
-}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 70% 40% at 20% 0%,rgba(123,108,255,.12),transparent 60%),
+             radial-gradient(ellipse 60% 35% at 85% 100%,rgba(255,107,138,.08),transparent 60%)}
 
-/* SCREENS */
-.screen{display:none;position:relative;z-index:1}
-.screen.active{display:flex;flex-direction:column;min-height:100vh}
+.screen{display:none;position:relative;z-index:1;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadein{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.fadeup{animation:up .4s ease both}
 
-/* ─── LOGIN ─── */
-#login{align-items:center;justify-content:center;padding:24px}
-.login-wrap{width:100%;max-width:420px;animation:fadeUp .4s ease}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--a2))}
+.card.green-bar::before{background:linear-gradient(90deg,var(--accent),var(--green))}
 
-.login-card{
-  background:var(--card);border:1px solid var(--border);border-radius:24px;
-  padding:40px 32px;position:relative;overflow:hidden;
+.flabel{display:block;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.finput{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:11px;padding:12px 14px;font-family:'Syne',sans-serif;font-size:15px;color:var(--text);outline:none;transition:border-color .2s}
+.finput::placeholder{color:var(--muted)}.finput:focus{border-color:var(--accent)}.finput.bad{border-color:var(--a2)}
+.ferr{font-size:12px;color:var(--a2);margin-top:5px;display:none}.ferr.on{display:block}
+
+.btn{border:none;border-radius:12px;padding:14px 20px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.btn-p{background:linear-gradient(135deg,var(--accent),#a87dff);color:#fff}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(123,108,255,.38)}
+.btn-s{background:var(--card);border:1.5px solid var(--border)!important;color:var(--text)}
+.btn-s:hover{border-color:var(--muted)!important}
+.btn-w{background:rgba(255,210,77,.08);border:1.5px solid rgba(255,210,77,.28)!important;color:var(--yellow)}
+.btn-w:hover{background:rgba(255,210,77,.16)}
+.iBtn{background:none;border:1.5px solid var(--border);border-radius:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:16px;transition:all .15s;flex-shrink:0}
+.iBtn:hover{color:var(--text);border-color:var(--muted)}
+
+/* LANDING */
+#landing{align-items:stretch}
+.land-hero{position:relative;padding:0 20px 28px;overflow:hidden}
+.land-hero::before{content:'';position:absolute;inset:0;z-index:0;
+  background:
+    linear-gradient(180deg,rgba(8,8,15,0) 0%,var(--bg) 92%),
+    radial-gradient(ellipse 90% 55% at 50% -10%,rgba(0,135,81,.35),transparent 60%);
 }
-.login-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-}
-.app-badge{
-  display:inline-flex;align-items:center;gap:8px;margin-bottom:20px;
-  background:rgba(124,106,255,.12);border:1px solid rgba(124,106,255,.3);
-  border-radius:100px;padding:6px 16px;
-  font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);
-  letter-spacing:.1em;text-transform:uppercase;
-}
-.app-badge::before{content:'◆';font-size:8px}
-.login-title{
-  font-size:32px;font-weight:800;line-height:1.1;margin-bottom:8px;
-  background:linear-gradient(135deg,#fff 0%,var(--accent) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
+.land-topbar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.land-brand{display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.flag-chip{display:flex;height:14px;width:22px;border-radius:3px;overflow:hidden;border:1px solid rgba(255,255,255,.15);flex-shrink:0}
+.flag-chip span{flex:1;height:100%}
+.flag-chip span:nth-child(1),.flag-chip span:nth-child(3){background:#008751}
+.flag-chip span:nth-child(2){background:#fff}
+
+.land-flagband{position:relative;z-index:1;margin-top:6px;display:flex;height:64px;border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:0 12px 40px rgba(0,135,81,.18)}
+.land-flagband div{flex:1;height:100%}
+.land-flagband div:nth-child(1),.land-flagband div:nth-child(3){background:linear-gradient(160deg,#00a862,#006b3f)}
+.land-flagband div:nth-child(2){background:linear-gradient(160deg,#ffffff,#e9e9f2)}
+
+.land-title{position:relative;z-index:1;margin-top:26px;font-size:34px;line-height:1.12;font-weight:800}
+.land-title .grad{background:linear-gradient(135deg,#fff 20%,var(--accent) 65%,var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.land-sub{position:relative;z-index:1;margin-top:12px;color:var(--muted);font-size:14.5px;line-height:1.65;max-width:440px}
+
+.land-cta{position:relative;z-index:1;display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.land-cta .btn{width:auto;padding:14px 26px}
+
+.motif-row{position:relative;z-index:1;display:flex;gap:8px;margin-top:22px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.motif-row::-webkit-scrollbar{display:none}
+.motif-chip{flex-shrink:0;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:100px;padding:8px 14px;font-size:12px;color:var(--text);white-space:nowrap}
+.motif-chip .ic{font-size:15px}
+
+.land-body{padding:8px 20px 36px;display:flex;flex-direction:column;gap:14px}
+.culture-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cul-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden}
+.cul-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.cul-card.g1::before{background:#008751}
+.cul-card.g2::before{background:var(--accent)}
+.cul-card.g3::before{background:var(--yellow)}
+.cul-ic{font-size:24px;margin-bottom:8px}
+.cul-lbl{font-size:12px;font-weight:700;color:var(--text)}
+.cul-sub{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.4}
+
+.land-strip{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px}
+.land-strip .n{font-size:20px;font-weight:800;color:var(--green)}
+.land-strip .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.stripdiv{width:1px;align-self:stretch;background:var(--border)}
+
+.land-foot{text-align:center;font-size:11.5px;color:var(--muted);padding:0 20px 26px}
+
+/* LOGIN */
+#login{align-items:center;justify-content:center;padding:20px}
+.login-card{padding:36px 28px;width:100%;max-width:400px}
+.brand-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(123,108,255,.12);border:1px solid rgba(123,108,255,.3);border-radius:100px;padding:6px 16px;font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px}
+.brand-pill::before{content:'◆';font-size:7px}
+.login-h{font-size:28px;font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .login-sub{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:28px}
+.fg{margin-bottom:14px}
+.swline{text-align:center;font-size:13px;color:var(--muted);margin-top:18px}
+.swline a{color:var(--accent);cursor:pointer;font-weight:700}
 
-.form-group{margin-bottom:16px}
-.form-label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.form-input{
-  width:100%;background:var(--surface);border:1.5px solid var(--border);
-  border-radius:10px;padding:13px 16px;
-  font-family:'Syne',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s;
-}
-.form-input::placeholder{color:var(--muted)}
-.form-input:focus{border-color:var(--accent)}
-.form-input.error{border-color:var(--accent2)}
-.err-msg{font-size:12px;color:var(--accent2);margin-top:6px;display:none}
-.err-msg.show{display:block}
+/* HOME */
+#home{align-items:center;justify-content:flex-start;padding:20px 20px 40px}
+.home-wrap{width:100%;max-width:480px;display:flex;flex-direction:column;gap:16px}
+.topbar{display:flex;align-items:center;justify-content:space-between}
+.topbar-brand{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.uchip{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:5px 5px 5px 13px}
+.uchip-name{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logout-btn{background:rgba(255,107,138,.1);border:1px solid rgba(255,107,138,.2);border-radius:100px;padding:4px 11px;font-family:'DM Mono',monospace;font-size:10px;color:var(--a2);cursor:pointer;transition:all .15s}
+.logout-btn:hover{background:rgba(255,107,138,.2)}
 
-.btn-auth{
-  width:100%;background:linear-gradient(135deg,var(--accent),#9b6aff);
-  border:none;border-radius:12px;padding:15px;margin-top:8px;
-  font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#fff;
-  cursor:pointer;transition:all .2s;letter-spacing:.02em;
-}
-.btn-auth:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,106,255,.35)}
-.btn-auth:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 12px;text-align:center}
+.sval{font-size:22px;font-weight:800;margin-bottom:3px}
+.sval.av{color:var(--accent)}.sval.gv{color:var(--green)}.sval.rv{color:var(--a2)}
+.slbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
 
-.switch-line{text-align:center;font-size:13px;color:var(--muted);margin-top:20px}
-.switch-line a{color:var(--accent);cursor:pointer;font-weight:600;text-decoration:none}
-.switch-line a:hover{text-decoration:underline}
+.sec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.secbtn{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:12px 8px;text-align:center;cursor:pointer;transition:all .2s}
+.secbtn:hover{border-color:var(--accent)}
+.secbtn.on{background:rgba(123,108,255,.1);border-color:var(--accent)}
+.secbtn-icon{font-size:20px;margin-bottom:6px}
+.secbtn-lbl{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.secbtn.on .secbtn-lbl{color:var(--accent)}
 
-/* ─── HOME ─── */
-#home{align-items:center;justify-content:center;padding:24px}
-.home-inner{display:flex;flex-direction:column;align-items:center;width:100%;max-width:720px}
+.setup-card{padding:22px 20px}
+.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px}
+.numinput{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:11px;padding:12px 14px;font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--text);outline:none;transition:border-color .2s;text-align:center}
+.numinput:focus{border-color:var(--accent)}
+.nhint{font-size:10px;color:var(--muted);text-align:center;margin-top:5px}
 
-.topbar{
-  width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;
-}
-.topbar-brand{font-family:'DM Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
-.user-chip{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:5px 5px 5px 14px}
-.user-chip-email{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.btn-logout{background:rgba(255,106,124,.1);border:1px solid rgba(255,106,124,.25);border-radius:100px;padding:5px 12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--accent2);cursor:pointer;transition:all .15s}
-.btn-logout:hover{background:rgba(255,106,124,.2)}
+.fail-banner{background:rgba(255,210,77,.06);border:1.5px solid rgba(255,210,77,.25);border-radius:var(--r);padding:14px 16px;display:none;align-items:center;gap:14px}
+.fail-banner.show{display:flex}
+.fb-icon{font-size:22px;flex-shrink:0}
+.fb-info{flex:1}
+.fb-title{font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:2px}
+.fb-sub{font-size:11px;color:var(--muted)}
+.fb-num{font-family:'DM Mono',monospace;font-size:20px;font-weight:800;color:var(--yellow)}
 
-.home-header{text-align:center;margin-bottom:24px}
-.home-badge{
-  display:inline-flex;align-items:center;gap:8px;margin-bottom:14px;
-  background:rgba(124,106,255,.12);border:1px solid rgba(124,106,255,.3);
-  border-radius:100px;padding:6px 16px;
-  font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;
-}
-.home-badge::before{content:'◆';font-size:8px}
-.home-title{
-  font-size:clamp(32px,7vw,54px);font-weight:800;line-height:1.05;margin-bottom:8px;
-  background:linear-gradient(135deg,#fff 0%,var(--accent) 55%,var(--accent2) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.home-sub{color:var(--muted);font-size:14px}
-
-.stat-strip{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;justify-content:center}
-.stat-pill{background:var(--card);border:1px solid var(--border);border-radius:100px;padding:8px 18px;font-family:'DM Mono',monospace;font-size:12px;display:flex;align-items:center;gap:8px}
-.stat-pill span{color:var(--accent);font-weight:500}
-
-.sections-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;margin-bottom:16px}
-.sec-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.sec-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 32px rgba(124,106,255,.15)}
-.sec-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity .2s}
-.sec-card:hover::before,.sec-card.sel::before{opacity:1}
-.sec-card.sel{border-color:var(--accent)}
-.sec-icon{font-size:24px;margin-bottom:10px}
-.sec-name{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
-.sec-count{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)}
-.pb-wrap{width:100%;height:3px;background:var(--border);border-radius:2px;margin-top:12px}
-.pb-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:2px;transition:width .4s ease}
-
-.batch-box{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
-.batch-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.batch-label::after{content:'';flex:1;height:1px;background:var(--border)}
-.batch-btns{display:flex;flex-wrap:wrap;gap:8px}
-.b-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);cursor:pointer;transition:all .15s}
-.b-btn:hover{border-color:var(--accent);color:var(--accent)}
-.b-btn.sel{background:rgba(124,106,255,.15);border-color:var(--accent);color:var(--accent)}
-
-.action-row{display:flex;gap:12px;width:100%}
-.btn-main{flex:1;background:linear-gradient(135deg,var(--accent),#9b6aff);border:none;border-radius:12px;padding:16px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;transition:all .2s}
-.btn-main:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,106,255,.35)}
-.btn-sub{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s}
-.btn-sub:hover{border-color:var(--muted)}
-
-/* ─── QUIZ ─── */
+/* QUIZ */
 #quiz{padding:0}
-.quiz-hdr{
-  position:sticky;top:0;z-index:10;
-  background:rgba(10,10,15,.92);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);
-  padding:16px 20px;display:flex;align-items:center;gap:16px;
-}
-.q-back{background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:16px;transition:all .15s;flex-shrink:0}
-.q-back:hover{color:var(--text);border-color:var(--muted)}
-.q-meta{flex:1}
-.q-section-title{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
-.q-prog-text{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);margin-top:2px}
-.streak-chip{background:rgba(79,255,176,.1);border:1px solid rgba(79,255,176,.2);border-radius:8px;padding:6px 12px;font-family:'DM Mono',monospace;font-size:12px;color:var(--green)}
-.prog-bar{height:3px;background:var(--border)}
-.prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));transition:width .3s ease}
+.qtop{position:sticky;top:0;z-index:10;background:rgba(8,8,15,.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:13px 18px;display:flex;align-items:center;gap:13px}
+.qmeta{flex:1}
+.qsec{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.qprog{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);margin-top:2px}
+.timer{background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:6px 13px;font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--text);min-width:68px;text-align:center;transition:all .3s;flex-shrink:0}
+.timer.warn{border-color:var(--yellow);color:var(--yellow)}
+.timer.hot{border-color:var(--a2);color:var(--a2);animation:blink .7s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.pbar{height:3px;background:var(--border)}
+.pfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));transition:width .35s ease}
 
-.quiz-body{flex:1;padding:24px 20px;display:flex;flex-direction:column;gap:20px;max-width:720px;margin:0 auto;width:100%}
-.q-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;position:relative;overflow:hidden;animation:slideIn .3s ease}
-@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
-.q-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.q-tag{background:rgba(124,106,255,.12);border-radius:4px;padding:2px 8px;font-size:10px}
-.q-text{font-size:16px;font-weight:600;line-height:1.6;color:var(--text)}
+.qbody{flex:1;padding:18px;display:flex;flex-direction:column;gap:14px;max-width:660px;margin:0 auto;width:100%}
+.qcard{padding:22px 18px}
+.qbadge{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.qtag{background:rgba(123,108,255,.12);border-radius:4px;padding:2px 8px;font-size:9px}
+.qtext{font-size:15px;font-weight:600;line-height:1.7;color:var(--text)}
 
-.opts-grid{display:flex;flex-direction:column;gap:10px}
-.opt{
-  background:var(--surface);border:1.5px solid var(--border);border-radius:12px;
-  padding:14px 18px;text-align:left;cursor:pointer;transition:all .2s;
-  display:flex;align-items:flex-start;gap:12px;
-  font-family:'Syne',sans-serif;font-size:14px;color:var(--text);line-height:1.5;
-  animation:optIn .3s ease both;
-}
-.opt:nth-child(1){animation-delay:.05s}.opt:nth-child(2){animation-delay:.1s}.opt:nth-child(3){animation-delay:.15s}.opt:nth-child(4){animation-delay:.2s}
-@keyframes optIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
-.opt:hover:not(:disabled){border-color:var(--accent);background:rgba(124,106,255,.06);transform:translateX(4px)}
-.opt:disabled{cursor:default}
-.opt-lbl{width:26px;height:26px;border-radius:6px;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;flex-shrink:0;transition:all .2s}
-.opt.correct{border-color:var(--green);background:rgba(79,255,176,.08)}.opt.correct .opt-lbl{background:var(--green);color:#000}
-.opt.wrong{border-color:var(--accent2);background:rgba(255,106,124,.08)}.opt.wrong .opt-lbl{background:var(--accent2);color:#fff}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{background:var(--surface);border:1.5px solid var(--border);border-radius:11px;padding:13px 16px;text-align:left;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:11px;font-family:'Syne',sans-serif;font-size:14px;color:var(--text);line-height:1.55;animation:fadein .25s ease both}
+.opt:nth-child(1){animation-delay:.04s}.opt:nth-child(2){animation-delay:.08s}.opt:nth-child(3){animation-delay:.12s}.opt:nth-child(4){animation-delay:.16s}
+.opt:hover:not([disabled]){border-color:var(--accent);background:rgba(123,108,255,.07);transform:translateX(3px)}
+.opt[disabled]{cursor:default}
+.olbl{width:26px;height:26px;border-radius:6px;background:var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:11px;font-weight:600;transition:all .2s}
+.opt.correct{border-color:var(--green);background:rgba(0,229,160,.07)}.opt.correct .olbl{background:var(--green);color:#000}
+.opt.wrong{border-color:var(--a2);background:rgba(255,107,138,.07)}.opt.wrong .olbl{background:var(--a2);color:#fff}
+.navrow{display:flex;gap:10px}
+.skipbtn{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px 18px;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s}
+.skipbtn:hover{color:var(--text)}
+.nxtbtn{flex:1;background:linear-gradient(135deg,var(--accent),#a87dff);color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.nxtbtn:hover{box-shadow:0 6px 22px rgba(123,108,255,.38)}
+.nxtbtn:disabled{opacity:.3;cursor:not-allowed;box-shadow:none}
 
-.fb-box{border-radius:12px;padding:16px 18px;font-size:14px;line-height:1.6;display:none;animation:fadeIn .2s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.fb-box.show{display:block}
-.fb-correct{background:rgba(79,255,176,.08);border:1px solid rgba(79,255,176,.2);color:var(--green)}
-.fb-wrong{background:rgba(255,106,124,.08);border:1px solid rgba(255,106,124,.2);color:var(--accent2)}
-.fb-lbl{font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
+/* RESULTS */
+#results{align-items:center;justify-content:flex-start;padding:20px 20px 40px}
+.res-wrap{width:100%;max-width:480px;display:flex;flex-direction:column;gap:14px}
+.score-card{padding:28px 22px;text-align:center}
+.res-emoji{font-size:52px;margin-bottom:12px}
+.res-title{font-size:26px;font-weight:800;margin-bottom:5px}
+.res-sub{color:var(--muted);font-size:13px;margin-bottom:22px}
+.score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px 8px}
+.scv{font-size:20px;font-weight:800;margin-bottom:3px}
+.scv.g{color:var(--green)}.scv.r{color:var(--a2)}.scv.y{color:var(--yellow)}.scv.b{color:var(--accent)}
+.sclbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.fail-pill{background:rgba(255,107,138,.07);border:1px solid rgba(255,107,138,.2);border-radius:var(--r);padding:14px 16px;display:none;align-items:center;gap:12px}
+.fail-pill.show{display:flex}
+.fp-icon{font-size:20px}
+.fp-txt{flex:1}
+.fp-title{font-size:13px;font-weight:700;color:var(--a2)}
+.fp-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.fp-num{font-family:'DM Mono',monospace;font-size:22px;font-weight:800;color:var(--a2)}
+.acols{display:flex;flex-direction:column;gap:10px}
 
-.rate-row{display:none;flex-direction:column;gap:10px}
-.rate-row.show{display:flex}
-.rate-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center}
-.rate-btns{display:flex;gap:8px}
-.rate-btn{flex:1;border-radius:10px;padding:12px 8px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;border:1.5px solid;display:flex;flex-direction:column;align-items:center;gap:4px;background:transparent}
-.rate-btn .re{font-size:18px}.rate-btn .rt{font-size:10px;letter-spacing:.05em;text-transform:uppercase}
-.rb-e{border-color:var(--green);color:var(--green)}.rb-e:hover{background:rgba(79,255,176,.12)}
-.rb-m{border-color:var(--yellow);color:var(--yellow)}.rb-m:hover{background:rgba(255,228,79,.12)}
-.rb-h{border-color:var(--accent2);color:var(--accent2)}.rb-h:hover{background:rgba(255,106,124,.12)}
+/* CORRECTIONS */
+#corrections{padding:0}
+.ctop{position:sticky;top:0;z-index:10;background:rgba(8,8,15,.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:13px 18px;display:flex;align-items:center;gap:13px}
+.ctitle{flex:1;font-size:14px;font-weight:700}
+.ccount{font-family:'DM Mono',monospace;font-size:11px;color:var(--a2)}
+.cbody{padding:16px 18px;display:flex;flex-direction:column;gap:12px;max-width:660px;margin:0 auto;width:100%}
+.citem{border-radius:16px;overflow:hidden;border:1px solid var(--border);animation:up .3s ease both}
+.chead{background:var(--card);padding:16px 18px 12px;border-bottom:1px solid var(--border)}
+.cqbadge{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.cqtag{background:rgba(123,108,255,.1);border-radius:4px;padding:2px 7px;font-size:9px}
+.cqtext{font-size:14px;font-weight:600;line-height:1.65;color:var(--text)}
+.copts{background:var(--surface);padding:12px 18px;display:flex;flex-direction:column;gap:7px}
+.copt{border-radius:9px;padding:10px 13px;font-size:13px;line-height:1.5;display:flex;align-items:flex-start;gap:10px}
+.clbl{width:22px;height:22px;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:700}
+.copt.right{background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.22);color:var(--green)}.copt.right .clbl{background:var(--green);color:#000}
+.copt.yours{background:rgba(255,107,138,.07);border:1px solid rgba(255,107,138,.22);color:var(--a2)}.copt.yours .clbl{background:var(--a2);color:#fff}
+.copt.dim{border:1px solid var(--border);color:var(--muted)}.copt.dim .clbl{background:var(--border);color:var(--muted)}
+.skip-tag{display:inline-block;margin-top:6px;background:rgba(255,210,77,.08);border:1px solid rgba(255,210,77,.22);border-radius:6px;padding:4px 11px;font-size:11px;color:var(--yellow);font-family:'DM Mono',monospace}
 
-.quiz-nav{display:flex;gap:10px}
-.btn-nav{flex:1;border-radius:12px;padding:14px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;border:none;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-nxt{background:linear-gradient(135deg,var(--accent),#9b6aff);color:#fff}
-.btn-nxt:hover{box-shadow:0 6px 20px rgba(124,106,255,.3)}
-.btn-nxt:disabled{opacity:.3;cursor:not-allowed}
-.btn-skip{background:var(--card);border:1px solid var(--border)!important;color:var(--muted)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);z-index:999;background:var(--card);border:1px solid var(--green);border-radius:100px;padding:10px 22px;font-family:'DM Mono',monospace;font-size:12px;color:var(--green);white-space:nowrap;opacity:0;transition:all .3s ease;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
-/* ─── RESULTS ─── */
-#results{align-items:center;justify-content:center;padding:24px}
-.res-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:36px 28px;width:100%;max-width:480px;text-align:center;position:relative;overflow:hidden}
-.res-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--green))}
-.res-emoji{font-size:52px;margin-bottom:16px}
-.res-title{font-size:28px;font-weight:800;margin-bottom:8px}
-.res-sub{color:var(--muted);font-size:14px;margin-bottom:28px}
-.res-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:28px}
-.rs{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 12px}
-.rs-val{font-size:24px;font-weight:800;margin-bottom:4px}
-.rs-val.g{color:var(--green)}.rs-val.r{color:var(--accent2)}.rs-val.y{color:var(--yellow)}
-.rs-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
-.srs-box{background:rgba(255,228,79,.06);border:1px solid rgba(255,228,79,.2);border-radius:12px;padding:14px 16px;margin-bottom:20px;text-align:left}
-.srs-title{font-size:12px;font-weight:700;color:var(--yellow);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
-.srs-text{font-size:13px;color:var(--muted)}
-.res-actions{display:flex;flex-direction:column;gap:10px}
-
-/* Toast */
-.toast{position:fixed;bottom:24px;right:24px;z-index:200;background:var(--card);border:1px solid var(--green);border-radius:10px;padding:10px 16px;font-family:'DM Mono',monospace;font-size:12px;color:var(--green);display:flex;align-items:center;gap:8px;transform:translateY(80px);opacity:0;transition:all .3s ease}
-.toast.show{transform:translateY(0);opacity:1}
-
-@media(max-width:480px){
-  .sections-grid,.sec-card+.sec-card{grid-template-columns:1fr}
-  .login-card{padding:28px 20px}
-  .user-chip-email{max-width:110px}
+@media(max-width:380px){
+  .login-card{padding:26px 16px}
+  .score-grid{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
 <body>
+<div class="toast" id="toast"></div>
 
-<div class="toast" id="toast">💾 Progress saved</div>
+<!-- ═══════════ LANDING ═══════════ -->
+<div id="landing" class="screen active">
+  <div class="land-hero">
+    <div class="land-topbar">
+      <div class="land-brand"><span class="flag-chip"><span></span><span></span><span></span></span> GES 112 · Nigerian People &amp; Culture</div>
+    </div>
 
-<!-- ══════════════ LOGIN SCREEN ══════════════ -->
-<div id="login" class="screen active">
-  <div class="login-wrap">
-    <div class="login-card">
-      <div class="app-badge">GES Quiz App</div>
-      <div class="login-title" id="authTitle">Welcome Back 👋</div>
-      <div class="login-sub" id="authSub">Sign in with your email to save and track your progress.</div>
+    <div class="land-flagband"><div></div><div></div><div></div></div>
 
-      <div class="form-group" id="nameGroup" style="display:none">
-        <label class="form-label">Your Name</label>
-        <input class="form-input" type="text" id="nameInput" placeholder="e.g. Great"/>
-        <div class="err-msg" id="nameErr">Please enter your name.</div>
+    <div class="land-title">Know Nigeria.<br><span class="grad">Ace GES 112.</span></div>
+    <div class="land-sub">300 exam-style questions covering Yoruba, Hausa and Igbo history, colonial rule, independence, civic values, cultism &amp; social vices, and Nigeria today — built for UNIPORT students.</div>
+
+    <div class="land-cta">
+      <button class="btn btn-p" onclick="goToAuth(false)">Get Started →</button>
+      <button class="btn btn-s" onclick="goToAuth(true)">I already have an account</button>
+    </div>
+
+    <div class="motif-row">
+      <div class="motif-chip"><span class="ic">🥁</span> Yoruba, Hausa &amp; Igbo Culture</div>
+      <div class="motif-chip"><span class="ic">🏛️</span> Colonial Rule &amp; Independence</div>
+      <div class="motif-chip"><span class="ic">🇳🇬</span> Civic Values &amp; Citizenship</div>
+      <div class="motif-chip"><span class="ic">⚖️</span> Law, Justice &amp; Judiciary</div>
+    </div>
+  </div>
+
+  <div class="land-body">
+    <div class="culture-grid">
+      <div class="cul-card g1">
+        <div class="cul-ic">👑</div>
+        <div class="cul-lbl">History &amp; Art</div>
+        <div class="cul-sub">Nok, Ife, Oyo, Benin &amp; the Hausa Bakwai</div>
       </div>
-
-      <div class="form-group">
-        <label class="form-label">Email Address</label>
-        <input class="form-input" type="email" id="emailInput" placeholder="e.g. you@uniport.edu.ng" autocomplete="email"/>
-        <div class="err-msg" id="emailErr">Please enter a valid email.</div>
+      <div class="cul-card g2">
+        <div class="cul-ic">🕊️</div>
+        <div class="cul-lbl">Nation Building</div>
+        <div class="cul-sub">Coups, Civil War &amp; the 3Rs</div>
       </div>
-
-      <button class="btn-auth" id="authBtn" onclick="handleAuth()">Continue →</button>
-
-      <div class="switch-line">
-        <span id="switchText">New here?</span>
-        <a onclick="toggleMode()" id="switchLink"> Create account</a>
+      <div class="cul-card g3">
+        <div class="cul-ic">🎬</div>
+        <div class="cul-lbl">Nigeria Today</div>
+        <div class="cul-sub">Afrobeats, Nollywood &amp; current affairs</div>
       </div>
+    </div>
+
+    <div class="land-strip">
+      <div style="flex:1;text-align:center"><div class="n">300</div><div class="l">Questions</div></div>
+      <div class="stripdiv"></div>
+      <div style="flex:1;text-align:center"><div class="n">12</div><div class="l">Units</div></div>
+      <div class="stripdiv"></div>
+      <div style="flex:1;text-align:center"><div class="n">100%</div><div class="l">Free</div></div>
+    </div>
+  </div>
+
+  <div class="land-foot">Made for Nigerian undergraduates preparing for GES 112 · Green–White–Green 🇳🇬</div>
+</div>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<div id="login" class="screen">
+  <div style="display:flex;align-items:center;justify-content:center;padding:20px;flex:1">
+    <div class="card login-card fadeup">
+      <div class="brand-pill">GES 112 Quiz App</div>
+      <div class="login-h" id="authH">Welcome Back 👋</div>
+      <div class="login-sub" id="authSub">Sign in with your email. Your scores and progress are saved on this device.</div>
+      <div class="fg" id="nameGrp" style="display:none">
+        <label class="flabel">Your Name</label>
+        <input class="finput" type="text" id="nameIn" placeholder="e.g. Great"/>
+        <div class="ferr" id="nameErr">Please enter your name.</div>
+      </div>
+      <div class="fg">
+        <label class="flabel">Email Address</label>
+        <input class="finput" type="email" id="emailIn" placeholder="you@uniport.edu.ng"/>
+        <div class="ferr" id="emailErr">Please enter a valid email.</div>
+      </div>
+      <button class="btn btn-p" onclick="doAuth()" style="margin-top:6px">Continue →</button>
+      <div class="swline"><span id="swTxt">New here?</span><a onclick="toggleAuth()" id="swLink"> Create account</a></div>
+      <div class="swline" style="margin-top:8px"><a onclick="show('landing')">← Back</a></div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════ HOME SCREEN ══════════════ -->
+<!-- ═══════════ HOME ═══════════ -->
 <div id="home" class="screen">
-  <div class="home-inner">
+  <div style="display:flex;justify-content:center;width:100%">
+  <div class="home-wrap">
 
     <div class="topbar">
-      <div class="topbar-brand">GES Quiz App</div>
-      <div class="user-chip">
-        <div class="user-chip-email" id="chipEmail">—</div>
-        <button class="btn-logout" onclick="logout()">Log out</button>
+      <div class="topbar-brand">GES 112 Quiz App</div>
+      <div class="uchip">
+        <div class="uchip-name" id="chipName">—</div>
+        <button class="logout-btn" onclick="doLogout()">Logout</button>
       </div>
     </div>
 
-    <div class="home-header">
-      <div class="home-badge">GES 111 / 100</div>
-      <h1 class="home-title">Hi, <span id="userGreet">Student</span>! 👋</h1>
-      <p class="home-sub">250 questions · Spaced repetition · Uniport</p>
+    <div class="stats-row">
+      <div class="stat-box"><div class="sval av" id="stAttempted">0</div><div class="slbl">Attempted</div></div>
+      <div class="stat-box"><div class="sval gv" id="stBest">—</div><div class="slbl">Best Score</div></div>
+      <div class="stat-box"><div class="sval rv" id="stFailed">0</div><div class="slbl">Fail Bank</div></div>
     </div>
 
-    <div class="stat-strip">
-      <div class="stat-pill">Total <span>250</span></div>
-      <div class="stat-pill">Due Today <span id="dueCount">—</span></div>
-      <div class="stat-pill">Mastered <span id="masteredCount">—</span></div>
-    </div>
-
-    <div class="sections-grid">
-      <div class="sec-card" onclick="selectSection('english')" id="sec-english">
-        <div class="sec-icon">📝</div>
-        <div class="sec-name">Communication English</div>
-        <div class="sec-count">Q1 – Q150 · 150 questions</div>
-        <div class="pb-wrap"><div class="pb-fill" id="pb-english" style="width:0%"></div></div>
-      </div>
-      <div class="sec-card" onclick="selectSection('library')" id="sec-library">
-        <div class="sec-icon">📚</div>
-        <div class="sec-name">Use of Library</div>
-        <div class="sec-count">Q151 – Q250 · 100 questions</div>
-        <div class="pb-wrap"><div class="pb-fill" id="pb-library" style="width:0%"></div></div>
+    <div>
+      <div class="flabel" style="margin-bottom:10px">Choose Section</div>
+      <div class="sec-grid">
+        <div class="secbtn on" onclick="pickSec('all',this)"><div class="secbtn-icon">📚</div><div class="secbtn-lbl">All</div></div>
+        <div class="secbtn" onclick="pickSec('u1',this)"><div class="secbtn-icon">🏺</div><div class="secbtn-lbl">Unit 1</div></div>
+        <div class="secbtn" onclick="pickSec('u2',this)"><div class="secbtn-icon">🏛️</div><div class="secbtn-lbl">Unit 2</div></div>
+        <div class="secbtn" onclick="pickSec('u3',this)"><div class="secbtn-icon">🗳️</div><div class="secbtn-lbl">Unit 3</div></div>
+        <div class="secbtn" onclick="pickSec('u4',this)"><div class="secbtn-icon">⚔️</div><div class="secbtn-lbl">Unit 4</div></div>
+        <div class="secbtn" onclick="pickSec('u5',this)"><div class="secbtn-icon">🛍️</div><div class="secbtn-lbl">Unit 5</div></div>
+        <div class="secbtn" onclick="pickSec('u6',this)"><div class="secbtn-icon">⚖️</div><div class="secbtn-lbl">Unit 6</div></div>
+        <div class="secbtn" onclick="pickSec('u7',this)"><div class="secbtn-icon">👨‍⚖️</div><div class="secbtn-lbl">Unit 7</div></div>
+        <div class="secbtn" onclick="pickSec('u8',this)"><div class="secbtn-icon">🤝</div><div class="secbtn-lbl">Unit 8</div></div>
+        <div class="secbtn" onclick="pickSec('u9',this)"><div class="secbtn-icon">🚨</div><div class="secbtn-lbl">Unit 9</div></div>
+        <div class="secbtn" onclick="pickSec('u10',this)"><div class="secbtn-icon">🔄</div><div class="secbtn-lbl">Unit 10</div></div>
+        <div class="secbtn" onclick="pickSec('u11',this)"><div class="secbtn-icon">🌾</div><div class="secbtn-lbl">Unit 11</div></div>
+        <div class="secbtn" onclick="pickSec('u12',this)"><div class="secbtn-icon">🇳🇬</div><div class="secbtn-lbl">Unit 12</div></div>
       </div>
     </div>
 
-    <div class="batch-box">
-      <div class="batch-label">Batch Size</div>
-      <div class="batch-btns">
-        <button class="b-btn sel" onclick="setBatch(10,this)">10</button>
-        <button class="b-btn" onclick="setBatch(20,this)">20</button>
-        <button class="b-btn" onclick="setBatch(30,this)">30</button>
-        <button class="b-btn" onclick="setBatch(50,this)">50</button>
-        <button class="b-btn" onclick="setBatch(0,this)">All Due</button>
+    <div class="card setup-card green-bar">
+      <div class="flabel" style="margin-bottom:14px">Quiz Settings</div>
+      <div class="setup-grid">
+        <div>
+          <label class="flabel">No. of Questions</label>
+          <input class="numinput" type="number" id="qNum" value="20" min="5" max="250"/>
+          <div class="nhint">Max: <span id="maxQ">250</span></div>
+        </div>
+        <div>
+          <label class="flabel">Time Limit (mins)</label>
+          <input class="numinput" type="number" id="qTime" value="20" min="1" max="180"/>
+          <div class="nhint">1 – 180 mins</div>
+        </div>
       </div>
     </div>
 
-    <div class="action-row">
-      <button class="btn-main" onclick="startQuiz()">Start Quiz ▶</button>
-      <button class="btn-sub" onclick="startDue()">Due Only 🔁</button>
+    <div class="fail-banner" id="failBanner">
+      <div class="fb-icon">⚡</div>
+      <div class="fb-info">
+        <div class="fb-title">Fail Bank</div>
+        <div class="fb-sub">Questions you got wrong or skipped</div>
+      </div>
+      <div class="fb-num" id="fbNum">0</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-p" onclick="startQuiz(false)">Start Quiz ▶</button>
+      <button class="btn btn-w" id="retryBtn" onclick="startQuiz(true)" style="display:none">🔄 Retry Fail Bank</button>
     </div>
 
   </div>
+  </div>
 </div>
 
-<!-- ══════════════ QUIZ SCREEN ══════════════ -->
+<!-- ═══════════ QUIZ ═══════════ -->
 <div id="quiz" class="screen">
-  <div class="quiz-hdr">
-    <button class="q-back" onclick="goHome()">←</button>
-    <div class="q-meta">
-      <div class="q-section-title" id="qSecTitle">Quiz</div>
-      <div class="q-prog-text" id="qProgText">Q 1 / 10</div>
+  <div class="qtop">
+    <button class="iBtn" onclick="exitQuiz()">←</button>
+    <div class="qmeta">
+      <div class="qsec" id="qSec">Quiz</div>
+      <div class="qprog" id="qProg">Q 1 / 20</div>
     </div>
-    <div class="streak-chip" id="streakChip">🔥 0</div>
+    <div class="timer" id="timer">20:00</div>
   </div>
-  <div class="prog-bar"><div class="prog-bar-fill" id="progFill" style="width:0%"></div></div>
-
-  <div class="quiz-body">
-    <div class="q-card">
-      <div class="q-num" id="qNum">Q1 <span class="q-tag">English</span></div>
-      <div class="q-text" id="qText"></div>
+  <div class="pbar"><div class="pfill" id="pFill" style="width:0%"></div></div>
+  <div class="qbody">
+    <div class="card qcard">
+      <div class="qbadge" id="qBadge">Q1</div>
+      <div class="qtext" id="qText"></div>
     </div>
-
-    <div class="opts-grid" id="optsGrid"></div>
-
-    <div class="fb-box" id="fbBox">
-      <div class="fb-lbl" id="fbLbl"></div>
-      <div id="fbTxt"></div>
-    </div>
-
-    <div class="rate-row" id="rateRow">
-      <div class="rate-label">How well did you know this?</div>
-      <div class="rate-btns">
-        <button class="rate-btn rb-e" onclick="rate('easy')"><span class="re">😎</span><span class="rt">Easy</span></button>
-        <button class="rate-btn rb-m" onclick="rate('medium')"><span class="re">🤔</span><span class="rt">Medium</span></button>
-        <button class="rate-btn rb-h" onclick="rate('hard')"><span class="re">😵</span><span class="rt">Hard</span></button>
-      </div>
-    </div>
-
-    <div class="quiz-nav">
-      <button class="btn-nav btn-skip" onclick="skip()">Skip</button>
-      <button class="btn-nav btn-nxt" id="nxtBtn" onclick="next()" disabled>Next →</button>
+    <div class="opts" id="opts"></div>
+    <div class="navrow">
+      <button class="skipbtn" onclick="skipQ()">Skip</button>
+      <button class="nxtbtn" id="nxtBtn" onclick="nextQ()" disabled>Next →</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════════ RESULTS SCREEN ══════════════ -->
+<!-- ═══════════ RESULTS ═══════════ -->
 <div id="results" class="screen">
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px">
-    <div class="res-card">
-      <div class="res-emoji" id="resEmoji">🎉</div>
-      <div class="res-title" id="resTitle">Done!</div>
-      <div class="res-sub" id="resSub"></div>
-      <div class="res-stats">
-        <div class="rs"><div class="rs-val g" id="resCorrect">0</div><div class="rs-lbl">Correct</div></div>
-        <div class="rs"><div class="rs-val r" id="resWrong">0</div><div class="rs-lbl">Wrong</div></div>
-        <div class="rs"><div class="rs-val y" id="resScore">0%</div><div class="rs-lbl">Score</div></div>
-      </div>
-      <div class="srs-box">
-        <div class="srs-title">⏰ Next Review</div>
-        <div class="srs-text" id="srsText"></div>
-      </div>
-      <div class="res-actions">
-        <button class="btn-main" onclick="goHome()">← Back to Home</button>
-        <button class="btn-sub" onclick="retryWrong()">Retry Wrong Answers 🔄</button>
+  <div style="display:flex;justify-content:center;width:100%">
+  <div class="res-wrap">
+    <div class="card score-card green-bar">
+      <div class="res-emoji" id="rEmoji">🎉</div>
+      <div class="res-title" id="rTitle">Quiz Complete!</div>
+      <div class="res-sub" id="rSub">Here's how you did</div>
+      <div class="score-grid">
+        <div class="sc"><div class="scv g" id="rC">0</div><div class="sclbl">Correct</div></div>
+        <div class="sc"><div class="scv r" id="rW">0</div><div class="sclbl">Wrong</div></div>
+        <div class="sc"><div class="scv y" id="rSk">0</div><div class="sclbl">Skipped</div></div>
+        <div class="sc"><div class="scv b" id="rS">0%</div><div class="sclbl">Score</div></div>
       </div>
     </div>
+    <div class="fail-pill" id="failPill">
+      <div class="fp-icon">❌</div>
+      <div class="fp-txt">
+        <div class="fp-title">Added to Fail Bank</div>
+        <div class="fp-sub">Wrong + skipped questions saved for retry</div>
+      </div>
+      <div class="fp-num" id="fpNum">0</div>
+    </div>
+    <div class="acols">
+      <button class="btn btn-p" onclick="goCorrections()">📋 View Corrections</button>
+      <button class="btn btn-w" id="reRetryBtn" onclick="startQuiz(true)" style="display:none">⚡ Retry Fail Bank</button>
+      <button class="btn btn-s" onclick="goHome()">← New Quiz</button>
+    </div>
   </div>
+  </div>
+</div>
+
+<!-- ═══════════ CORRECTIONS ═══════════ -->
+<div id="corrections" class="screen">
+  <div class="ctop">
+    <button class="iBtn" onclick="show('results')">←</button>
+    <div class="ctitle">Corrections</div>
+    <div class="ccount" id="cCount"></div>
+  </div>
+  <div class="cbody" id="cBody"></div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════
-// QUESTIONS
-// ═══════════════════════════════════════════
-const Q = [
-  {id:1,s:'english',t:'The boys __________ together on Saturdays.',o:['playing','play','plays','played'],a:1},
-  {id:2,s:'english',t:'Everybody __________ preparing for the New Year celebration.',o:['were','are','will','is'],a:3},
-  {id:3,s:'english',t:'Anita __________ too much.',o:['talking','talks','talk','is talk'],a:1},
-  {id:4,s:'english',t:"Tom shook Linda's hand, embraced her and __________.",o:['she was kissed','she received his kiss','kissed her','she got a kiss from him'],a:2},
-  {id:5,s:'english',t:'Last year Uncle Dan told me he __________ my relative.',o:['was','is','were','used to be'],a:0},
-  {id:6,s:'english',t:'Jack __________ dirty jobs for Chief Gogo.',o:['do','dos','does','doing'],a:2},
-  {id:7,s:'english',t:'He has __________ my friend since 1989.',o:['being','be','been','to be'],a:2},
-  {id:8,s:'english',t:'The girl __________ I fell in love with is exquisitely beautiful.',o:['who','which','whose','whom'],a:3},
-  {id:9,s:'english',t:'__________ been long since we started lectures.',o:["Its","Its'","I'ts","It's"],a:3},
-  {id:10,s:'english',t:'Each time one is emotional, __________ makes wrong decisions.',o:['they','he','one','we'],a:2},
-  {id:11,s:'english',t:'The Vice-Chancellor plays a ROUND of golf. "round" is:',o:['Preposition','Adverb','Noun','Verb'],a:2},
-  {id:12,s:'english',t:'The girls sat ROUND a table. "round" is:',o:['Adjective','Preposition','Adverb','Verb'],a:1},
-  {id:13,s:'english',t:'Motorists ROUND a bend at alarming speed. "round" is:',o:['Adverb','Pronoun','Noun','Verb'],a:3},
-  {id:14,s:'english',t:'Children play with ROUND objects. "round" is:',o:['Adjective','Noun','Preposition','Interjection'],a:0},
-  {id:15,s:'english',t:'The lecturer assigned David to MAN the project. "man" is:',o:['Noun','Verb','Adverb','Adjective'],a:1},
-  {id:16,s:'english',t:'The lady says her husband is not MAN enough. "man" is:',o:['Adjective','Preposition','Verb','Noun'],a:0},
-  {id:17,s:'english',t:'MANNING a project can be quite DEMANDING. The two words are:',o:['Verb/verb','Noun/noun','Verb/adjective','Noun/verb'],a:2},
-  {id:18,s:'english',t:'Benita WATERS her garden; we have a WATER problem. Words are:',o:['Noun/noun','Verb/noun','Noun/verb','Verb/adjective'],a:1},
-  {id:19,s:'english',t:'"Today it is an IN thing … to propose a woman IN public." in/in are:',o:['Preposition/adjective','Adjective/preposition','Adverb/verb','Preposition/preposition'],a:1},
-  {id:20,s:'english',t:'Her father moves OUT, we will move IN. out/in are:',o:['Preposition/preposition','Adverb/preposition','Adverb/adverb','Preposition/adverb'],a:2},
-  {id:21,s:'english',t:'What about __________ eighty naira you owe me?',o:['them','those','that','these'],a:2},
-  {id:22,s:'english',t:'Everybody in this club knows __________ right and obligations.',o:['them',"everybody's",'our','his/her'],a:3},
-  {id:23,s:'english',t:'Either the thief or his accusers __________ lying.',o:['is','was',"wasn't",'are'],a:3},
-  {id:24,s:'english',t:'Either his accusers or the thief __________ lying.',o:['were','are',"weren't",'was'],a:3},
-  {id:25,s:'english',t:'The guard often takes the dog with __________ on patrol duty.',o:['himself','him','us','them'],a:0},
-  {id:26,s:'english',t:'Jones and Mark drove to the club but __________ suggested they go home.',o:['he','he/she','one','the latter'],a:3},
-  {id:27,s:'english',t:'To boost __________ waning reputation, the company sent canvassers.',o:['their','its',"it's",'his'],a:1},
-  {id:28,s:'english',t:'The herdsmen now sitting in the waiting room __________ complained of blurry vision.',o:['has','have',"hasn't",'had'],a:1},
-  {id:29,s:'english',t:'Many undergraduate students __________ term papers to on-the-spot tests.',o:['prefers','prefer','want','like'],a:1},
-  {id:30,s:'english',t:'The jury __________ divided on what verdict to give.',o:['was','were','have','have been'],a:0},
-  {id:31,s:'english',t:'__________ and __________ will be blamed for the error.',o:['You/myself','Myself/yourself','You/I','I/yourself'],a:2},
-  {id:32,s:'english',t:'__________ did it themselves.',o:['Musa and me','Okon and yourself','Musa and Okon','Okon and herself'],a:2},
-  {id:33,s:'english',t:'The rice was prepared by __________.',o:['Ourselves','Yourself','Us','We'],a:2},
-  {id:34,s:'english',t:'Our parents and __________ were thoroughly abused by the urchins.',o:['Ourselves','we','us','me'],a:2},
-  {id:35,s:'english',t:'I completely disagree __________ you on that point.',o:['about','with','on','for'],a:1},
-  {id:36,s:'english',t:'Now, let us agree __________ what to do.',o:['on','with','for','as'],a:0},
-  {id:37,s:'english',t:'The fire burnt __________ the main building but also the barn.',o:['only','just','not only','both'],a:2},
-  {id:38,s:'english',t:'Bridget started this course before us; __________ she earned the lowest score.',o:['since','and','if','yet'],a:3},
-  {id:39,s:'english',t:'His father is a wealthy man … he lives like a prince. (conjunction)',o:['but','and','when','yet'],a:1},
-  {id:40,s:'english',t:'His father is a wealthy man … he lives like a pauper. (conjunction)',o:['but','and','when','so'],a:0},
-  {id:41,s:'english',t:'"He landed a deal worth a fortune" means:',o:['He fell on a high deal','He secured a very profitable transaction','He crashed a costly deal','He wasted an expensive deal'],a:1},
-  {id:42,s:'english',t:'"Grandpa laces his brandy with milk" means:',o:['He ties brandy with milk','He preserves his lace','He places milk on top','He mixes brandy with milk'],a:3},
-  {id:43,s:'english',t:'"Tough times don\'t last" means:',o:['Unbreakable seasons are short','Dried weather is seasonal','Difficult periods are temporal','Time slots are short'],a:2},
-  {id:44,s:'english',t:'"I enjoy strong coffee" means:',o:['Coffee with rich flavour','Thick coffee','Soft coffee','Hot coffee'],a:0},
-  {id:45,s:'english',t:'"People who prioritize careers over family" means:',o:['People with jobs barely make good spouses','Jobless people barely make spouses','People placing career above family have relationship difficulties','Women with high jobs barely make good wives'],a:2},
-  {id:46,s:'english',t:'The underlined words are adjectives EXCEPT:',o:['member of a distinguished family','distinguished herself in her job','welcome the distinguished ladies','the distinguished senator'],a:1},
-  {id:47,s:'english',t:'We look forward to __________ from you.',o:['hear','hearing','heard','haven heard'],a:1},
-  {id:48,s:'english',t:'The man insisted __________ speaking with the director.',o:['to','from','on','about'],a:2},
-  {id:49,s:'english',t:'We are accustomed __________ your late payments.',o:['to','with','at','of'],a:0},
-  {id:50,s:'english',t:'Students have to desist __________ trading on bed spaces.',o:['in','about','for','from'],a:3},
-  {id:51,s:'english',t:'Spoken English may be studied under which two broad headings?',o:['phonetics/listening','speaking/phonology','elocution/speaking','phonology/phonetics'],a:3},
-  {id:52,s:'english',t:'The organs of speech include the following EXCEPT:',o:['The tongue','The lip','The left hemisphere','The hard palate'],a:2},
-  {id:53,s:'english',t:'English speech sounds are divided into how many?',o:['2','26','24','20'],a:2},
-  {id:54,s:'english',t:'The criterion dividing voiced and voiceless consonants is called:',o:['height of the tongue','place of articulation','manner of articulation','state of the glottis'],a:3},
-  {id:55,s:'english',t:'Using consonant criteria, /p/ is called:',o:['voice bilabial nasal','voiceless bilabial plosive','voice bilabial plosive','voiceless bilabial nasal'],a:1},
-  {id:56,s:'english',t:'The word "continue" has how many syllables?',o:['1','2','3','4'],a:2},
-  {id:57,s:'english',t:'The syllable structure for "dream" is:',o:['CCVC','CCVVC','CCCVV','VCCVV'],a:1},
-  {id:58,s:'english',t:'A __________ is produced with obstruction of the airstream.',o:['Consonant','constituent','vowel','nasals'],a:0},
-  {id:59,s:'english',t:'Another name for soft palate is:',o:['pharynx','velum','labio-dental','diphthongs'],a:1},
-  {id:60,s:'english',t:'The part of body responsible for /h/ sound is:',o:['Glottis','uvular','alveolar','velar'],a:0},
-  {id:61,s:'english',t:'[e] and [ð] are examples of __________ sounds.',o:['alveolar','dental','glottal','nasal'],a:1},
-  {id:62,s:'english',t:'Speech produced with vocal cords in state of breathing is:',o:['voiceless','voice','bilabial','nasal'],a:0},
-  {id:63,s:'english',t:'The glottis is narrowed in the production of which state?',o:['voice','voiceless','oral sound','nasal sound'],a:0},
-  {id:64,s:'english',t:'In consonant production, the __________ articulator moves.',o:['active','passive','state of glottis','dental'],a:0},
-  {id:65,s:'english',t:'The __________ articulator is usually the moving one.',o:['passive','active','glottal','velum'],a:1},
-  {id:66,s:'english',t:'The active articulators reside in the __________ part of the mouth.',o:['lower','upper','central','inside'],a:0},
-  {id:67,s:'english',t:'The passive articulators reside in the __________ part of the mouth.',o:['lower','upper','central','inside'],a:1},
-  {id:68,s:'english',t:'The place of articulation is named after the:',o:['active articulator','passive articulator','state of the glottis','place of articulation'],a:1},
-  {id:69,s:'english',t:'English nasal sounds include the following, EXCEPT:',o:['n','m','ŋ','ʌ'],a:3},
-  {id:70,s:'english',t:'The following sounds are fricative, EXCEPT:',o:['t','p','s','z'],a:0},
-  {id:71,s:'english',t:'/I/ and /u/ are examples of __________ vowels.',o:['open','close','central','close'],a:1},
-  {id:72,s:'english',t:'/æ/ and /ɑ:/ are examples of __________ vowels.',o:['open','close','central','close'],a:0},
-  {id:73,s:'english',t:'The following are back vowels, EXCEPT:',o:['u:','u','ɔ:','i'],a:3},
-  {id:74,s:'english',t:'/ʌ/, /ɑ:/, /ɜ:/ and /ə/ are all __________ vowels.',o:['back','front','central','rounded'],a:2},
-  {id:75,s:'english',t:'English pure vowels are how many?',o:['20','12','26','44'],a:1},
-  {id:76,s:'english',t:'The following are pure vowels, EXCEPT:',o:['ɑ:','u','ʌ','eə'],a:3},
-  {id:77,s:'english',t:'"fare", "bear" and "bare" are examples of which diphthong?',o:['eə','ɔɪ','aɪ','aʊ'],a:0},
-  {id:78,s:'english',t:'Alveolar sounds are produced with which passive articulator?',o:['The tongue','The upper lip','The teeth ridge','The nose'],a:0},
-  {id:79,s:'english',t:'One major similarity between nasal and vowel sounds is that:',o:['They are both voice sounds','They are voiceless sounds','Produced with same articulators','They are rounded vowels'],a:0},
-  {id:80,s:'english',t:'The following are places of articulation EXCEPT:',o:['Glottal','Alveolar','dentals','Fricatives'],a:3},
-  {id:81,s:'english',t:'eə, ɔɪ, aɪ and aʊ are all examples of:',o:['monophthongs','diphthongs','vowels','consonants'],a:1},
-  {id:82,s:'english',t:'The shape of the lips is a criterion for describing __________ sounds.',o:['nasals','fricatives','consonants','vowels'],a:3},
-  {id:83,s:'english',t:'IPA stands for:',o:['International Phonetic Alphabet','Intercontinental Phonemes Association','International Phonics Academy','International Pronunciation Assessment'],a:0},
-  {id:84,s:'english',t:'Pick the odd one out: oil, boil, dull, boy',o:['oil','boil','dull','boy'],a:2},
-  {id:85,s:'english',t:'The English language is the __________ language of Nigeria.',o:['mother-tongue','first language','traditional','official'],a:3},
-  {id:86,s:'english',t:'Pick the INCORRECT statement:',o:['all nasal sounds are voiced','phonetics studies all human sounds','all vowel sounds are voiced','all consonants are voiceless'],a:3},
-  {id:87,s:'english',t:'Select the odd one among these options:',o:['all sounds are speech sounds','phonetics and phonology are levels of linguistics','speech is the secondary function of the speech organs','phonology is the study of specific sounds in a language'],a:0},
-  {id:88,s:'english',t:'The syllable structure of "car" is:',o:['CVC','VCV','VVC','CV'],a:0},
-  {id:89,s:'english',t:'How many syllables are in "multidimensional"?',o:['5','6','1','7'],a:1},
-  {id:90,s:'english',t:'The syllable structure of "man" is:',o:['CVC','VCV','VVC','CV'],a:0},
-  {id:91,s:'english',t:'The human speech organs include the following, EXCEPT:',o:['The mouth','The tongue','The nose','The ear'],a:3},
-  {id:92,s:'english',t:'Vowels are said to have the following characteristics, EXCEPT:',o:['central','resonant','continuant','nasal'],a:3},
-  {id:93,s:'english',t:'Correct transcription for "love":',o:['/love/','/lʌv/','/lɔrv/','/lɒv/'],a:1},
-  {id:94,s:'english',t:'Correct transcription for "judge":',o:['/dʒʌndʒ/','/ʤni/','/gorge/','/dʒɔdʒ/'],a:0},
-  {id:95,s:'english',t:'Correct transcription for "boy":',o:['/bɔɪ/','/boy/','/boi/','/boj/'],a:0},
-  {id:96,s:'english',t:'Word with same vowel sound as "poor":',o:['sour','tour','zoo','none of the above'],a:1},
-  {id:97,s:'english',t:'Word with same vowel sound as "ride":',o:['fine','buy','lie','all of the above'],a:3},
-  {id:98,s:'english',t:'Odd one out: fail, mail, hear, pale',o:['fail','mail','hear','pale'],a:2},
-  {id:99,s:'english',t:'Odd one out: sun, love, dog, bud',o:['sun','love','dog','bud'],a:2},
-  {id:100,s:'english',t:'Odd one out: bell, bed, mat, met',o:['bell','bed','mat','met'],a:2},
-  {id:101,s:'english',t:'For composition to be effective, the message must be all of these, EXCEPT:',o:['effectively transmitted','appropriately applied','promptly received','thoroughly regurgitated'],a:3},
-  {id:102,s:'english',t:'One of these is NOT among the rules of concord:',o:['period','gender','cases','number'],a:0},
-  {id:103,s:'english',t:'In writing good formal compositions, students should avoid all EXCEPT:',o:['slang','colloquial expressions','Jargons','clichés'],a:3},
-  {id:104,s:'english',t:'When a sender uses codes/symbols known to the receiver, this is called:',o:['mutual intelligibility','diverse communication','various signification','multiple interpretation'],a:0},
-  {id:105,s:'english',t:'One of these is NOT a principle of formal correspondence:',o:['clarity of expression','simplicity of language','courteous phrasing','sincerity of purpose'],a:3},
-  {id:106,s:'english',t:"General characteristics of letters: sender's address, date, receiver's address, salutation, complimentary close. This is:",o:['true','false','neither true nor false','all of the above'],a:0},
-  {id:107,s:'english',t:'Which is an example of a semi-formal date in letter writing?',o:['18/10/2024','October 18, 2024','18th October, 2024','18-10-2024'],a:2},
-  {id:108,s:'english',t:"The addressee's address is written only in __________ letters.",o:['formal','informal','semi-formal','all of the above'],a:0},
-  {id:109,s:'english',t:'When punctuation marks are used at end of each address line, it is:',o:['closed address','open address','marked address','unmarked address'],a:0},
-  {id:110,s:'english',t:'A letter addressed to "Messers" is meant for:',o:['a man','a woman','a firm of partners','both men and women'],a:2},
-  {id:111,s:'english',t:'One of these is NOT a type of business letter:',o:['enquiry','invitation','communiqué','complaint'],a:2},
-  {id:112,s:'english',t:'A brief outline written by a person about himself as a supporting document is a:',o:['curriculum vitae','status symbol','autobiography','memoir'],a:0},
-  {id:113,s:'english',t:"The following are aspects of curriculum vitae, EXCEPT:",o:['biodata','referees','educational qualifications',"life's experiences"],a:3},
-  {id:114,s:'english',t:'A __________ contains accurate and reliable information about a situation or event.',o:['report','an enquiry','an application','a communiqué'],a:0},
-  {id:115,s:'english',t:'__________ is a classification of reports according to purpose.',o:['oral report','audit report','annual report','detailed report'],a:1},
-  {id:116,s:'english',t:'__________ is NOT a classification of reports according to circumstances.',o:['routine reports','technical reports','investigative reports','laboratory reports'],a:1},
-  {id:117,s:'english',t:"All of these are Otagburuagu's functional groups of reports, EXCEPT:",o:['Information functions','diagnostic functions','prognostic functions','analytical functions'],a:3},
-  {id:118,s:'english',t:'Information sources for report writing include the following BUT ONE:',o:['Interviews','observations','questionnaires','none of the above'],a:3},
-  {id:119,s:'english',t:'__________ is NOT one of the formats of a detailed schematic report.',o:['membership','association','synopsis','observations'],a:3},
-  {id:120,s:'english',t:'One of the following does NOT clearly define terms of reference in a schematic report:',o:['Relevant information required for purpose','Time for report to be written','Subject matter and main assignment','The season for writing the report'],a:3},
-  {id:121,s:'english',t:'In report writing, investigation procedures include all these BUT ONE:',o:['gathering materials','transmission of results','analysis of data','interpretation of information'],a:1},
-  {id:122,s:'english',t:'A good written composition is assessed through expression, content, organization, mechanical accuracy. This is:',o:['All of the above','none of the above','first and third criteria only','second and forth criteria only'],a:0},
-  {id:123,s:'english',t:'The various types of essay include the following, EXCEPT:',o:['Expository essay','article','debate','report'],a:2},
-  {id:124,s:'english',t:'One of the following types of essay is also called an article:',o:['expository essay','reflective essay','narrative essay','descriptive essay'],a:0},
-  {id:125,s:'english',t:'Starting an essay by illustrating the topic with a relevant story is called __________ introduction.',o:['Polemical','explanatory','anecdotal','definitive'],a:2},
-  {id:126,s:'english',t:'Feature is everything in a newspaper/magazine, except news, adverts, editorials, pictures, and cartoons:',o:['All of the above','none of the above','news and editorials only','pictures and cartoons only'],a:0},
-  {id:127,s:'english',t:'While feature writing is the second form of journalistic writing, the first form is:',o:['Report writing','creative writing','news writing','letter writing'],a:2},
-  {id:128,s:'english',t:'All of these but one is a type of feature writing:',o:['The expose','The Brightener','The Column','The Byline'],a:3},
-  {id:129,s:'english',t:'__________ is a small article supplying supplementary information about the main news.',o:['Side bar','Byline','The Expose','The Brightener'],a:0},
-  {id:130,s:'english',t:'One of these is NOT among the purposes of feature/article writing:',o:['information','inspiration','entertainment','none of the above'],a:3},
-  {id:131,s:'english',t:'When an essay writer begins with a story from the Bible, this introduction is:',o:['anecdotal introduction','polemical introduction','allusive introduction','definitive introduction'],a:2},
-  {id:132,s:'english',t:'All of these are examples of routine reports, EXCEPT:',o:['advertising report','production report','sales report','special report'],a:3},
-  {id:133,s:'english',t:'Academic Project, Dissertation and Thesis fall under __________ category.',o:['routine reports','technical reports','analytical reports','scientific reports'],a:1},
-  {id:134,s:'english',t:'Conference report, progress report, medical report and laboratory report are:',o:['specific reports','information reports','routine reports','technical reports'],a:2},
-  {id:135,s:'english',t:'__________ does not merely report what happens, but examines cause(s) and consequence(s) in a stylish way.',o:['feature story','short story','news story','communique'],a:0},
-  {id:136,s:'english',t:'The primary language skills are so referred because:',o:['required for secondary school entrance','do not require formal instruction for acquisition','required for travelling abroad','acquired at primary school stage'],a:1},
-  {id:137,s:'english',t:'The second broad divisions of language skills are __________ and __________.',o:['conceptual and perceptual skills','oppressive and repressive skills','receptive and expressive skills','suppressive and depressive skills'],a:2},
-  {id:138,s:'english',t:'Reading and writing are __________.',o:['learned behaviours','innate at birth','acquired at adolescent stage','learned only by adults'],a:0},
-  {id:139,s:'english',t:'In listening, hunger is an example of __________ defect.',o:['psychological','physiological','sociological','philosophical'],a:1},
-  {id:140,s:'english',t:'Receptive skills are so called because:',o:['required for receiving visitors','used by receptionists','through them we receive information from others','other body parts receive brain signals'],a:2},
-  {id:141,s:'english',t:'__________ is NOT a type of listening.',o:['effective listening','appreciative listening','attentive listening','authentic listening'],a:3},
-  {id:142,s:'english',t:'__________ forms the basis for all language skills.',o:['Writing','Speaking','Reading','Listening'],a:3},
-  {id:143,s:'english',t:'__________ is NOT a possible solution to the wrong types of listening.',o:['shut off personal problems','stuff your ears with ear piece','adopt critical listening','judge only what is heard'],a:1},
-  {id:144,s:'english',t:'The three important stages of listening are:',o:['hearing, interpretation and responding','synthesizing, analyzing and feedback','hearing, note taking and revision','hearing, action and reaction'],a:0},
-  {id:145,s:'english',t:'All these except one are advantages of efficient listening skills:',o:['expansion of knowledge','development of language facility','evaluation of strong and weak arguments','enhanced financial status'],a:3},
-  {id:146,s:'english',t:'Conceptual skill refers to the skill of:',o:['reducing passages to concepts','conceptualizing an idea in the mind','conceiving a baby in the womb','All of the above'],a:1},
-  {id:147,s:'english',t:'One of these is NOT a physiological hindrance to effective listening.',o:['blank brain syndrome','stress','hunger','ill health'],a:0},
-  {id:148,s:'english',t:'__________ is defined as a habit formed into practical ability through conscious, deliberate and persistent effort.',o:['Talent','Skill','Ability','Discipline'],a:1},
-  {id:149,s:'english',t:'__________ is a very essential commodity in formal education that should be utilized effectively.',o:['Money','Talent','Knowledge','Time'],a:3},
-  {id:150,s:'english',t:'One of these is NOT an example of non-verbal cues in communication.',o:['Word of mouth','Manner of speaking','Attitude of speaking','Frown'],a:0},
-  // LIBRARY
-  {id:151,s:'library',t:'The Donald E. U. Ekong Library has how many floors?',o:['4','2','3','5'],a:3},
-  {id:152,s:'library',t:'The first point of contact as you enter the Donald E. U. Ekong Library is the __________.',o:['Research Desk','Reading Halls','Registration Desk','Card Collection Point'],a:2},
-  {id:153,s:'library',t:'The Collections of the Donald Ekong Library are over:',o:['2000','3000','5000','8000'],a:3},
-  {id:154,s:'library',t:'Borrowing of books in the library is referred to as:',o:['Checking out','Checking in','Signing out','Signing in'],a:0},
-  {id:155,s:'library',t:'Returning books in the library is referred to as:',o:['Checking out','Checking in','Signing out','Signing in'],a:1},
-  {id:156,s:'library',t:'The Donald Ekong Library is open to all types of users irrespective of their location:',o:['True','False','Maybe','Not stated'],a:1},
-  {id:157,s:'library',t:'The primary purpose of the library is to:',o:['support the university curriculum','provide internet services','provide conducive reading environment','provision of information resources'],a:0},
-  {id:158,s:'library',t:'The World Book and Copyright Day is celebrated on the:',o:['22nd August','23rd April','23rd March','20th March'],a:1},
-  {id:159,s:'library',t:'Who is the father of Librarianship?',o:['Melvin D','Sagattu L','Roland J','Ranganathan'],a:3},
-  {id:160,s:'library',t:'What do we call a librarian in charge of a specific subject?',o:['Librarian','Library Staff','Faculty representative','Subject librarian'],a:3},
-  {id:161,s:'library',t:'Students are allowed to borrow books for how many days?',o:['7 days','14 days','21 days','5 days'],a:1},
-  {id:162,s:'library',t:'Information resources of national importance are acquired by the:',o:['University Libraries','School Libraries','Public Libraries','National Libraries'],a:3},
-  {id:163,s:'library',t:'The problem of space and information explosion gave birth to:',o:['mobile libraries','virtual libraries','Social media pages of libraries','faculty libraries'],a:1},
-  {id:164,s:'library',t:'Libraries in Post-Secondary institutions are referred to as:',o:['University libraries','College libraries','Academic Libraries','Polytechnic libraries'],a:2},
-  {id:165,s:'library',t:'College libraries are examples of:',o:['University libraries','Polytechnic libraries','Special libraries','Academic Libraries'],a:3},
-  {id:166,s:'library',t:"Libraries that serve as official depository house of a country's copyright publications are called:",o:['University Libraries','School Libraries','Public Libraries','National Libraries'],a:3},
-  {id:167,s:'library',t:'Preservation of institutional contents for improved visibility is mostly done by:',o:['Public libraries','University libraries','Academic Libraries','School libraries'],a:2},
-  {id:168,s:'library',t:'Libraries established to cater for the reading needs of its users are called:',o:['University Libraries','Academic Libraries','Public Libraries','School Libraries'],a:2},
-  {id:169,s:'library',t:'The bibliography of all the works in a country is published by the:',o:['University Libraries','School Libraries','Public Libraries','National Libraries'],a:3},
-  {id:170,s:'library',t:'Libraries that contain more audio-visual and graphic materials are called:',o:['Public Libraries','School Libraries','National Libraries','University Libraries'],a:0},
-  {id:171,s:'library',t:'Libraries established by acts of governments to solve information needs are called:',o:['University Libraries','School Libraries','Public Libraries','National Libraries'],a:3},
-  {id:172,s:'library',t:'ISBN and ISSN in a country are issued by the:',o:['University Libraries','School Libraries','Public Libraries','National Libraries'],a:3},
-  {id:173,s:'library',t:'Every publisher is mandated to drop __ copies of their works with the National Library.',o:['5','2','3','1'],a:2},
-  {id:174,s:'library',t:'The copies are to be sent to the National Library within how many days?',o:['10','14','21','30'],a:3},
-  {id:175,s:'library',t:'The Federal and State Government deposit how many copies with the National Library?',o:['25 and 10 copies','15 and 10 copies','15 copies each','10 copies each'],a:0},
-  {id:176,s:'library',t:'Libraries attached to a particular establishment or ministry are called:',o:['School Libraries','Private Libraries','Special Libraries','Community Libraries'],a:2},
-  {id:177,s:'library',t:'One of the stand-out functions of special libraries is:',o:['information resources provision','loan services','Document Delivery Services','Reference Services'],a:0},
-  {id:178,s:'library',t:'Libraries supported by state or local government to serve citizens are called:',o:['Community libraries','Special libraries','Public Libraries','National libraries'],a:2},
-  {id:179,s:'library',t:'One of the stand-out functions of public libraries is:',o:['Reference services','Inter-library loan service','Internet services','Extension and outreach services'],a:3},
-  {id:180,s:'library',t:'The Queen Elizabeth II Library can be referred to as a:',o:['Private Library','Special Library','Public Library','School Library'],a:2},
-  {id:181,s:'library',t:'The Olusegun Obasanjo Library is found in which State?',o:['Lagos','Abeokuta','Ogun','Ekiti'],a:2},
-  {id:182,s:'library',t:"The University Librarian's office can be found in the __________ section of the Library.",o:['Readers Services','Technical Section','Information Services','Administrative Section'],a:3},
-  {id:183,s:'library',t:'Which section handles processing of books from hard copy to electronic format?',o:['Readers Service','Cataloguing and Classification','Circulation Section','Bindery Section'],a:1},
-  {id:184,s:'library',t:'Registration of library users is handled by which section?',o:['Readers Services','Technical Section','Information Services','Administrative Section'],a:0},
-  {id:185,s:'library',t:'The Library of Congress Classification Scheme was designed by:',o:['Charles Martel','Jerry Rowling','Luis David','James Hanson'],a:0},
-  {id:186,s:'library',t:'The Library of Congress was designed in what year?',o:['1895','1899','1987','1897'],a:3},
-  {id:187,s:'library',t:'The Library of Congress arranged the classes of knowledge into __ classes.',o:['15','23','21','31'],a:2},
-  {id:188,s:'library',t:'The following alphabets are captured in the Library of Congress EXCEPT one:',o:['M','S','O','Z'],a:2},
-  {id:189,s:'library',t:'How many letters are omitted from the Library of Congress Scheme?',o:['6','4','5','8'],a:1},
-  {id:190,s:'library',t:'Dewey Decimal Classification was named after:',o:['Donald Dewey','Mel Dewey','Melvil Dewey','Robert Dewey'],a:2},
-  {id:191,s:'library',t:'The Dewey Decimal Classification arranged the fields of knowledge into how many classes?',o:['8','12','15','10'],a:3},
-  {id:192,s:'library',t:'Which classification Scheme has just four volumes?',o:['LC','DDC','UDC','Moyes'],a:1},
-  {id:193,s:'library',t:'What is the full meaning of UDC?',o:['Union Development Classification','Universal Denominator Classification','Uniform Decimal Classification','Universal Decimal Classification'],a:3},
-  {id:194,s:'library',t:'All these are parts of the classification scheme EXCEPT one:',o:['Schedule','Alphabetical Index','Notation','Table of Contents'],a:3},
-  {id:195,s:'library',t:'All these are details of imprints EXCEPT one:',o:['Time of Publication','Date of Publication','Place of Publication','Name of Publisher'],a:0},
-  {id:196,s:'library',t:'What is the full meaning of OPAC?',o:['Online Publication Access Card','Original Public Access Catalogue','Online Public Access Catalogue','Online Preview Access Card'],a:2},
-  {id:197,s:'library',t:'The OPAC provides the following search options EXCEPT:',o:['Online Check In and Check Out','Cataloguing of Books','Authors Search','Title Search'],a:1},
-  {id:198,s:'library',t:'The authorities responsible for a publication can be called the following EXCEPT one:',o:['Authors','Editors','Publishers','Writer'],a:3},
-  {id:199,s:'library',t:'A catalogue containing joint holdings of more than one library is called a:',o:['Joint Catalogue','Simple Catalogue','Single Catalogue','Union Catalogue'],a:3},
-  {id:200,s:'library',t:'Catalogue cards are constructed using __ inches cards.',o:['7 by 3','3 by 5','8 by 4','5'],a:1},
-  {id:201,s:'library',t:'Card Catalogue primary has added entries for all the following EXCEPT:',o:['Publisher','Author','Title','Subject'],a:0},
-  {id:202,s:'library',t:'The Accession number locates the following EXCEPT one:',o:['Acquisition number','Donor agency','date of donation','format of the book'],a:3},
-  {id:203,s:'library',t:'The American Corner of Uniport provides the following services EXCEPT one:',o:['Education USA Programs','Internet Services','Laptop Loan Services','Checking in and out of books'],a:3},
-  {id:204,s:'library',t:'Digital libraries preserve information resources in which format?',o:['electronic format','virtual format','machine-readable format','online format'],a:0},
-  {id:205,s:'library',t:'Storing of information in the cloud is a highlight of what type of library?',o:['University libraries','School Libraries','Digital Libraries','Academic Libraries'],a:2},
-  {id:206,s:'library',t:'Digital libraries have solved the following problems EXCEPT one:',o:['Resource Depletion','Availability of Resources','Staff Training','Unlimited Access to Information Resources'],a:2},
-  {id:207,s:'library',t:'Which section of the Ekong Library provides free internet and computer services to undergraduates?',o:['Reference Section','Elsevier Room','Internet Section','Knowledge Commons'],a:3},
-  {id:208,s:'library',t:'Where was the first library in Nigeria located?',o:['Lagos','Abuja','Enugu','Ibadan'],a:0},
-  {id:209,s:'library',t:'Mixed Notations refers to the use of __ in library classification.',o:['Numbers and Letters','Capital and Small Letters','Figures and Alphabets','Numbers and Data'],a:0},
-  {id:210,s:'library',t:'ISBN means:',o:['International Serial Book Number','International Subject Bibliography Number','International Standard Book Number','Internet Standard Book Number'],a:2},
-  {id:211,s:'library',t:'The unauthorized use of publication for commercial purpose is:',o:['Piracy','Book Bond','Censorship','Duplication'],a:0},
-  {id:212,s:'library',t:'Libraries that promote independent study to captivate its users are called:',o:['Public Libraries','School Libraries','University Libraries','Special Libraries'],a:0},
-  {id:213,s:'library',t:'Libraries that collect and preserve literature of National Importance are called:',o:['Public Libraries','School Libraries','University Libraries','National Libraries'],a:3},
-  {id:214,s:'library',t:'Current awareness services for new collections is done primarily by:',o:['Public Libraries','School Libraries','University Libraries','Special Libraries'],a:3},
-  {id:215,s:'library',t:'__________ are referred to as the "Free for all Libraries".',o:['Public Libraries','School Libraries','University Libraries','Special Libraries'],a:0},
-  {id:216,s:'library',t:'Libraries that serve a very small set of users are called:',o:['Public Libraries','School Libraries','University Libraries','Special Libraries'],a:3},
-  {id:217,s:'library',t:'The Readers Services Division of the Donald Ekong Library has the following sections EXCEPT one:',o:['Registration Desk','Cataloguing and Classification Unit','Reference Unit','Research Desk'],a:1},
-  {id:218,s:'library',t:'According to Ranganathan, Librarianship is guided by __ laws.',o:['6','2','5','4'],a:2},
-  {id:219,s:'library',t:'Class A in the Library of Congress compiles __________ subjects.',o:['History','Music','General Works','Religion'],a:2},
-  {id:220,s:'library',t:'Class K in the Library of Congress compiles __________ subjects.',o:['Philosophy','Law','Science','Medicine'],a:1},
-  {id:221,s:'library',t:'Class R in the Library of Congress compiles __________ subjects.',o:['Philosophy','Law','Science','Medicine'],a:3},
-  {id:222,s:'library',t:'000 in the Dewey Decimal Classification compiles __________ subjects.',o:['Philosophy','Medicine','Computer Science','Music'],a:2},
-  {id:223,s:'library',t:'300 in the Dewey Decimal Classification compiles __________ subjects.',o:['Language','Religion','Social Science','Arts'],a:2},
-  {id:224,s:'library',t:'800 in the Dewey Decimal Classification compiles __________ subjects.',o:['Literature','Medicine','Computer Science','Religion'],a:0},
-  {id:225,s:'library',t:'Number 3 in the Universal Decimal Classification compiles __________ subjects.',o:['Mathematics','Religion','Social Sciences','Music'],a:2},
-  {id:226,s:'library',t:'Number 5 in the Universal Decimal Classification compiles __________ subjects.',o:['Mathematics, Natural Sciences','Geography, History','Science, Computer Science','Vacant'],a:0},
-  {id:227,s:'library',t:'Number 9 in the Universal Decimal Classification compiles __________ subjects.',o:['Philosophy','Religion','Applied Sciences','Geography'],a:3},
-  {id:228,s:'library',t:'__________ are responsible for editing a work of knowledge.',o:['Proofreaders','Authors','Editors','Publishers'],a:2},
-  {id:229,s:'library',t:'The access point of the library catalogue is called the:',o:['Author','Subject','Heading','Title'],a:2},
-  {id:230,s:'library',t:'The statement of responsibility comprises of the following EXCEPT one:',o:['Author','Editor','Title','Edition'],a:2},
-  {id:231,s:'library',t:'The physical description of the book comprises of the following EXCEPT one:',o:['Pagination','Illustrations','Imprints','Drawings'],a:2},
-  {id:232,s:'library',t:'The Notation in a classification scheme comprises of the following EXCEPT one:',o:['Numbers','Alphabets','Punctuations','Author'],a:3},
-  {id:233,s:'library',t:'__________ is an alphabetical compilation of names and synonyms in a publication.',o:['Abstracts','Index','Call Marks','Reference'],a:1},
-  {id:234,s:'library',t:'The removal of outdated information resources from the library shelves is called:',o:['Sanitation','Weeding','Shelf Reading','Checking out'],a:1},
-  {id:235,s:'library',t:'The Online Dictionary of Library Science defines a digital library as a library housing metadata and digital objects for user consumption:',o:['True','False','Maybe','Not stated'],a:0},
-  {id:236,s:'library',t:'The conversion of hard copy resources to electronic format is called:',o:['Electronic books','Digitization','OPAC','Online Cataloguing'],a:1},
-  {id:237,s:'library',t:'Digital Libraries have solved the following problems EXCEPT one:',o:['247 Access','Geographical limitation','Ease of retrieval','Acquisition of resources'],a:3},
-  {id:238,s:'library',t:'The Library announces new arrivals through which form?',o:['New Arrival Shelf','Orientation','Social Media Post','Notice Board'],a:0},
-  {id:239,s:'library',t:'Which section of the library houses historical documents and information resources?',o:['Reference','Document','Archives','Readers Services'],a:2},
-  {id:240,s:'library',t:'The following are periodicals that can be found in the Library EXCEPT one:',o:['Journal','Magazines','Pamphlets','Newspapers'],a:2},
-  {id:241,s:'library',t:'The following categories of staff can be found in the Library EXCEPT:',o:['Librarians','Library Officers','Support Staff','Minders'],a:3},
-  {id:242,s:'library',t:'Publications produced at intervals and continued overtime are called:',o:['Books','Journals','Periodicals','Newspapers'],a:2},
-  {id:243,s:'library',t:'__________ is a tool used for reading by visually impaired users.',o:['Lens','Braille','Audio Visuals','Amplifiers'],a:1},
-  {id:244,s:'library',t:'The Library of Congress Classification Scheme is used mainly in:',o:['Private Libraries','Academic Libraries','Public Libraries','School Libraries'],a:1},
-  {id:245,s:'library',t:'Numbers assigned to books to distinguish them from another book are called:',o:['Call Numbers','Retrieval Numbers','Classification Numbers','Index Numbers'],a:0},
-  {id:246,s:'library',t:'A summary of a publication is called:',o:['Index','Abstract','Bibliography','Reference'],a:1},
-  {id:247,s:'library',t:'A list of references is called:',o:['Index','Abstract','Bibliography','Reference List'],a:3},
-  {id:248,s:'library',t:'The easiest form of information retrieval in a digital library is done using:',o:['Library Catalogue','OPAC','Search Engine','Google'],a:1},
-  {id:249,s:'library',t:'The following are reference materials EXCEPT for one:',o:['Dictionaries','Encyclopedia','Directories','Books'],a:3},
-  {id:250,s:'library',t:'The Bindery unit of the Donald Ekong Library can be found on which floor?',o:['1st Floor','2nd Floor','3rd Floor','Ground Floor'],a:3},
+// ═══════════════════════════════════════════════════════
+// 300 QUESTIONS — GES 112: NIGERIAN PEOPLE AND CULTURE
+// ═══════════════════════════════════════════════════════
+const ALL = [
+  // ── GES 112: NIGERIAN PEOPLE AND CULTURE — 300 QUESTIONS ──
+  {id:1,s:'u1',t:'Which of the following was the main political system of the Yoruba before 1800?',o:['Gerontocracy','Theocratic monarchy','Constitutional monarchy','Feudal system'],a:1},
+  {id:2,s:'u1',t:'The spiritual and political head of the Yoruba people in Ife is known as the—',o:['Ooni','Alaafin','Oba','Olubada'],a:0},
+  {id:3,s:'u1',t:'Which of the following was the most prominent Yoruba kingdom before 1800?',o:['Benin','Ife','Oyo','Ijebu'],a:2},
+  {id:4,s:'u1',t:'What was the title of the king in the Oyo Empire?',o:['Obi','Sultan','Obong','Alaafin'],a:3},
+  {id:5,s:'u1',t:'The Oyo Mesi in Yoruba political structure served as—',o:['Military commanders','Priests','Kingmakers and advisers','Tax collectors'],a:2},
+  {id:6,s:'u1',t:'Which ethnic group is associated with the Nok culture?',o:['Yoruba','Hausa','Igbo','Jukun'],a:1},
+  {id:7,s:'u1',t:'Nok culture is particularly famous for its—',o:['Bronze masks','Terracotta sculptures','Wooden carvings','Wall paintings'],a:1},
+  {id:8,s:'u1',t:'Which of these is a major Igbo festival that predates colonialism?',o:['New Yam Festival','Sallah','Argungu','Osun Festival'],a:0},
+  {id:9,s:'u1',t:'The Igbo traditional political structure before 1800 can best be described as—',o:['Centralized monarchy','Federal monarchy','Gerontocracy and acephalous society','Military dictatorship'],a:2},
+  {id:10,s:'u1',t:'The Hausa city-states were known as—',o:['Emirates','Oyo towns','Zangons','Bakwai'],a:3},
+  {id:11,s:'u1',t:'The Hausa Bakwai are believed to be—',o:['Slave camps','Ancient cities founded by foreign traders','The original seven Hausa states','Islamic shrines'],a:2},
+  {id:12,s:'u1',t:'Which of these states was part of the Hausa Bakwai?',o:['Ife','Katsina','Calabar','Aba'],a:1},
+  {id:13,s:'u1',t:'The introduction of Islam into the Hausa states was largely through—',o:['Military conquest','Missionaries','Trade and scholarship','Colonization'],a:2},
+  {id:14,s:'u1',t:'Which minority group is known for its unique bronze art similar to that of Benin and Ife?',o:['Nupe','Ibibio','Jukun','TIV'],a:2},
+  {id:15,s:'u1',t:'Which of these was an ancient kingdom located in what is now Cross River State?',o:['Nri','Kanem','Kwararafa','Akwa Akpa (Old Calabar)'],a:3},
+  {id:16,s:'u1',t:'Which of the following ancient Nigerian civilizations is most associated with bronze casting?',o:['Nok','Ife','Tiv','Ibadan'],a:1},
+  {id:17,s:'u1',t:'The title "Oba" is commonly used by rulers in which region of Nigeria?',o:['North','East','South-West','South-South'],a:2},
+  {id:18,s:'u1',t:'The Igbo-Ukwu archaeological site is important because it reveals—',o:['Evidence of iron smelting','Early Islamic influence','A complex metalworking culture','Slave trading posts'],a:2},
+  {id:19,s:'u1',t:'The Bini Kingdom is best known for—',o:['Rock paintings','Large-scale agriculture','Bronze sculptures and royal court art','Islamic scholarship'],a:2},
+  {id:20,s:'u1',t:'Which of these Nigerian ethnic groups practiced a confederal form of government before 1800?',o:['Yoruba','Hausa','Igbo','Nupe'],a:2},
+  {id:21,s:'u2',t:'Which European country first established formal colonial rule in Nigeria?',o:['Germany','Portugal','Britain','France'],a:2},
+  {id:22,s:'u2',t:'The annexation of Lagos in 1861 was done through which agreement?',o:['Treaty of Egun','Treaty of Berlin','Treaty of Lagos','Treaty of Cession'],a:3},
+  {id:23,s:'u2',t:'Which organization was responsible for governing southern Nigeria before formal colonial administration?',o:['British Colonial Company','Royal Niger Company','United African Company','British Trading Council'],a:1},
+  {id:24,s:'u2',t:'The Royal Niger Company was headed by:',o:['Lord Lugard','Sir George Goldie','Hugh Clifford','Macpherson'],a:1},
+  {id:25,s:'u2',t:'The Berlin Conference of 1884–1885 was important because it:',o:['Gave Nigeria independence','Divided Africa among European powers','United African states','Introduced colonial taxes'],a:1},
+  {id:26,s:'u2',t:'British conquest of Northern Nigeria was completed by:',o:['1890','1900','1903','1914'],a:2},
+  {id:27,s:'u2',t:'The amalgamation of the Northern and Southern Protectorates of Nigeria took place in:',o:['1906','1914','1922','1931'],a:1},
+  {id:28,s:'u2',t:'The main reason for the amalgamation of Nigeria in 1914 was to:',o:['Give independence','Increase British settlers','Ensure administrative efficiency','Promote democracy'],a:2},
+  {id:29,s:'u2',t:'The person who amalgamated Nigeria in 1914 was:',o:['Hugh Clifford','Sir George Goldie','Lord Lugard','Macpherson'],a:2},
+  {id:30,s:'u2',t:'The first capital of colonial Nigeria was:',o:['Calabar','Lagos','Kaduna','Lokoja'],a:1},
+  {id:31,s:'u2',t:'The system of administration introduced by Lord Lugard was known as:',o:['Direct rule','Indirect rule','Military rule','Traditional rule'],a:1},
+  {id:32,s:'u2',t:'Which part of Nigeria most effectively accepted indirect rule?',o:['Western Nigeria','Eastern Nigeria','Northern Nigeria','Lagos'],a:2},
+  {id:33,s:'u2',t:'A major challenge to indirect rule in Eastern Nigeria was:',o:['Existence of powerful emirs','Lack of centralized authority','Support for colonialism','Too many Europeans'],a:1},
+  {id:34,s:'u2',t:'Under colonial rule, the highest British official in Nigeria was the:',o:['High Commissioner','Governor-General','Resident','District Officer'],a:1},
+  {id:35,s:'u2',t:'The British used traditional rulers in governance primarily to:',o:['Educate the masses','Train British administrators','Reduce administrative costs','Enforce independence'],a:2},
+  {id:36,s:'u2',t:'Which of these was a feature of colonial rule in Nigeria?',o:['Sovereign independence','Exploitation of resources','Equal political representation','True federalism'],a:1},
+  {id:37,s:'u2',t:'The first Nigerian constitution under colonial rule was the:',o:['Clifford Constitution','Richards Constitution','Macpherson Constitution','Lyttleton Constitution'],a:0},
+  {id:38,s:'u2',t:'The Clifford Constitution was introduced in:',o:['1914','1922','1946','1951'],a:1},
+  {id:39,s:'u2',t:'Which constitution introduced regionalism in Nigeria?',o:['Clifford Constitution','Richards Constitution','Macpherson Constitution','Lyttleton Constitution'],a:1},
+  {id:40,s:'u2',t:'The Legislative Council introduced under colonial rule primarily served the:',o:['Northern protectorate','Entire country equally','Colony and Protectorate of Southern Nigeria','Traditional rulers only'],a:2},
+  {id:41,s:'u3',t:'Who was the Governor-General that carried out the amalgamation of Northern and Southern Nigeria in 1914?',o:['Lord Lugard','Sir Arthur Richards','Sir Hugh Clifford','Harold Macmillan'],a:0},
+  {id:42,s:'u3',t:'What was the main reason for the amalgamation of Nigeria in 1914?',o:['To promote religious unity','To improve local industries','To reduce administrative cost and improve efficiency','To introduce democracy'],a:2},
+  {id:43,s:'u3',t:'What system of administration did Lord Lugard introduce in Nigeria?',o:['Parliamentary system','Indirect Rule','Federal system','Direct Rule'],a:1},
+  {id:44,s:'u3',t:'Which of the following was the first political party in Nigeria?',o:['Action Group (AG)','Northern People\'s Congress (NPC)','National Council of Nigeria and the Cameroons (NCNC)','Nigerian National Democratic Party (NNDP)'],a:3},
+  {id:45,s:'u3',t:'Who founded the Nigerian National Democratic Party (NNDP)?',o:['Nnamdi Azikiwe','Herbert Macaulay','Obafemi Awolowo','Ahmadu Bello'],a:1},
+  {id:46,s:'u3',t:'In what year was the NNDP founded?',o:['1923','1944','1951','1960'],a:0},
+  {id:47,s:'u3',t:'Which of these personalities was known as the "Father of Nigerian Nationalism"?',o:['Nnamdi Azikiwe','Ahmadu Bello','Herbert Macaulay','Tafawa Balewa'],a:2},
+  {id:48,s:'u3',t:'The Clifford Constitution of 1922 introduced what major political reform?',o:['Federalism','Adult suffrage','Legislative Council with elected African representatives','Self-government'],a:2},
+  {id:49,s:'u3',t:'The Zikist Movement was associated with which Nigerian nationalist?',o:['Herbert Macaulay','Nnamdi Azikiwe','Obafemi Awolowo','Tafawa Balewa'],a:1},
+  {id:50,s:'u3',t:'Which political party was founded by Obafemi Awolowo?',o:['NCNC','NPC','AG','NNDP'],a:2},
+  {id:51,s:'u3',t:'Which Nigerian nationalist was also the editor of the West African Pilot?',o:['Nnamdi Azikiwe','Ahmadu Bello','Anthony Enahoro','Ernest Ikoli'],a:0},
+  {id:52,s:'u3',t:'The NCNC was co-founded by Nnamdi Azikiwe and who else?',o:['Obafemi Awolowo','Tafawa Balewa','Herbert Macaulay','Ernest Ikoli'],a:2},
+  {id:53,s:'u3',t:'When was Nigeria granted independence?',o:['October 1, 1954','October 1, 1960','January 15, 1966','May 29, 1999'],a:1},
+  {id:54,s:'u3',t:'Who was the first Prime Minister of independent Nigeria?',o:['Nnamdi Azikiwe','Tafawa Balewa','Obafemi Awolowo','Ahmadu Bello'],a:1},
+  {id:55,s:'u3',t:'Which constitution introduced a federal system of government in Nigeria?',o:['Clifford Constitution','Macpherson Constitution','Lyttleton Constitution','Richards Constitution'],a:2},
+  {id:56,s:'u3',t:'Which of the following political parties was dominant in Northern Nigeria during the First Republic?',o:['NCNC','NPC','AG','NNDP'],a:1},
+  {id:57,s:'u3',t:'The Richards Constitution of 1946 was important because it:',o:['Introduced regional governments','Granted Nigeria independence','Introduced universal suffrage','Abolished indirect rule'],a:0},
+  {id:58,s:'u3',t:'Which of these nationalists moved the motion for Nigeria\'s independence?',o:['Obafemi Awolowo','Nnamdi Azikiwe','Herbert Macaulay','Anthony Enahoro'],a:3},
+  {id:59,s:'u3',t:'In which year was the Action Group (AG) formed?',o:['1944','1951','1959','1963'],a:1},
+  {id:60,s:'u3',t:'Which of the following colonial policies united Nigeria under one administration?',o:['Clifford Constitution','Amalgamation of 1914','Lyttleton Constitution','Independence Constitution'],a:1},
+  {id:61,s:'u4',t:'When did the first military coup in Nigeria take place?',o:['1960','1963','1966','1975'],a:2},
+  {id:62,s:'u4',t:'Who was Nigeria\'s first military Head of State?',o:['Yakubu Gowon','Chukwuemeka Ojukwu','Murtala Mohammed','Aguiyi Ironsi'],a:3},
+  {id:63,s:'u4',t:'The 1966 coup was primarily led by which ethnic group?',o:['Yoruba','Hausa','Igbo','Fulani'],a:2},
+  {id:64,s:'u4',t:'Which of the following is a consequence of military rule in Nigeria?',o:['Frequent elections','Stable democracy','Suppression of civil liberties','Independent judiciary'],a:2},
+  {id:65,s:'u4',t:'Who succeeded General Aguiyi Ironsi after the July 1966 counter-coup?',o:['Olusegun Obasanjo','Yakubu Gowon','Murtala Mohammed','Ibrahim Babangida'],a:1},
+  {id:66,s:'u4',t:'Which military regime created the most states in Nigeria?',o:['General Babangida','General Abacha','General Gowon','General Murtala Mohammed'],a:0},
+  {id:67,s:'u4',t:'One major reason for military intervention in Nigerian politics was:',o:['Academic excellence','Political instability and corruption','Religious tolerance','Economic prosperity'],a:1},
+  {id:68,s:'u4',t:'What year did the military hand over power to a civilian government in Nigeria for the second time?',o:['1979','1999','1983','1993'],a:1},
+  {id:69,s:'u4',t:'Which of the following is NOT a feature of military government?',o:['Decrees and edicts','Rule by force','Separation of powers','Suspension of the constitution'],a:2},
+  {id:70,s:'u4',t:'Military rule in Nigeria encouraged:',o:['Multiparty democracy','Federal character principle','Centralized decision-making','Transparency and accountability'],a:2},
+  {id:71,s:'u4',t:'What was the main cause of the Nigerian Civil War?',o:['Religious crisis','Secession of Biafra','Foreign invasion','Trade disputes'],a:1},
+  {id:72,s:'u4',t:'Who was the leader of Biafra during the Nigerian Civil War?',o:['Nnamdi Azikiwe','Emeka Anyaoku','Odumegwu Ojukwu','Chinua Achebe'],a:2},
+  {id:73,s:'u4',t:'The Nigerian Civil War officially began in:',o:['May 1966','July 1966','January 1967','July 1967'],a:3},
+  {id:74,s:'u4',t:'Which slogan was used by the Nigerian government during the civil war?',o:['"One Nigeria!"','"Unity is Strength"','"To keep Nigeria one is a task that must be done"','"Federalism forever"'],a:2},
+  {id:75,s:'u4',t:'Which country supported Biafra during the civil war?',o:['Ghana','United States','France','Soviet Union'],a:2},
+  {id:76,s:'u4',t:'One major humanitarian crisis during the Nigerian Civil War was:',o:['Flood disaster','Famine in Biafra','Earthquake in the East','Oil spillage'],a:1},
+  {id:77,s:'u4',t:'The Nigerian Civil War ended in:',o:['1970','1972','1969','1971'],a:0},
+  {id:78,s:'u4',t:'The policy of "No victor, no vanquished" was declared by:',o:['Olusegun Obasanjo','Yakubu Gowon','Ojukwu','Murtala Mohammed'],a:1},
+  {id:79,s:'u4',t:'The immediate cause of the civil war was:',o:['Creation of more states','Refusal to implement Aburi Accord','Religious violence','Boundary disputes'],a:1},
+  {id:80,s:'u4',t:'A major impact of the Nigerian Civil War was:',o:['Total disintegration of Nigeria','End of federalism','Massive loss of lives and property','Emergence of new political parties'],a:2},
+  {id:81,s:'u5',t:'What is the primary feature of indigenous trade in Nigeria?',o:['Dependence on online payment systems','Use of sophisticated retail chains','Use of traditional market days and barter system','Reliance on foreign exchange'],a:2},
+  {id:82,s:'u5',t:'Which of the following best describes a traditional market in Nigeria?',o:['Only operates during weekends','Operates using modern supermarkets','Is based on community gathering and periodic market days','Requires international trade licenses'],a:2},
+  {id:83,s:'u5',t:'In the pre-colonial Nigerian market system, trade was mainly conducted through:',o:['E-commerce platforms','Cryptocurrency','Barter and later cowries','Credit cards'],a:2},
+  {id:84,s:'u5',t:'Which of these is a common indigenous unit of trade in traditional Nigerian markets?',o:['Dollar','Cartons','Calabashes and baskets','Pounds'],a:2},
+  {id:85,s:'u5',t:'One key role of traditional Nigerian markets is to:',o:['Promote foreign investments','Serve as centers of cultural and social exchange','Ban rural development','Enforce tax payments'],a:1},
+  {id:86,s:'u5',t:'Which ethnic group in Nigeria is especially known for its indigenous apprenticeship system in trade?',o:['Fulani','Yoruba','Igbo','Tiv'],a:2},
+  {id:87,s:'u5',t:'The Igbo apprenticeship system is best described as a:',o:['Formal university education system','System where youths are trained and later settled to start their own business','Government employment scheme','Pension plan'],a:1},
+  {id:88,s:'u5',t:'What is the key benefit of the indigenous apprenticeship system?',o:['It reduces family ties','It promotes idleness','It builds entrepreneurship and self-reliance','It discourages business growth'],a:2},
+  {id:89,s:'u5',t:'In the indigenous apprenticeship system, "settlement" means:',o:['Sending the apprentice to jail','Terminating the apprenticeship with punishment','Giving the apprentice money or goods to start a business','Returning the apprentice to the village'],a:2},
+  {id:90,s:'u5',t:'Which of the following is NOT a characteristic of the indigenous apprenticeship system?',o:['Knowledge transfer','Skills acquisition','Free distribution of goods','Mentorship'],a:2},
+  {id:91,s:'u5',t:'Skill acquisition is important in trade because it:',o:['Reduces productivity','Promotes laziness','Equips individuals to be self-reliant','Deters economic development'],a:2},
+  {id:92,s:'u5',t:'Which of the following best defines self-reliance?',o:['Ability to depend on foreign goods','Ability to live without producing anything','Ability to meet one\'s needs through personal effort and local resources','Dependence on government aid'],a:2},
+  {id:93,s:'u5',t:'An example of a self-reliant activity in Nigeria is:',o:['Importing all food items','Learning tailoring and opening a fashion shop','Depending on monthly allowance','Waiting for foreign investors'],a:1},
+  {id:94,s:'u5',t:'Which sector mostly benefits from indigenous skill acquisition programs?',o:['Oil and gas','Fashion and crafts','International banking','Importation services'],a:1},
+  {id:95,s:'u5',t:'The relationship between trade and self-reliance is that trade:',o:['Makes people dependent on others','Encourages waste','Provides a platform for people to exchange goods and services for livelihood','Weakens local production'],a:2},
+  {id:96,s:'u5',t:'The use of local materials and human resources for development defines:',o:['Importation','Indigenous production','Globalization','Digital marketing'],a:1},
+  {id:97,s:'u5',t:'One way to promote indigenous trade is to:',o:['Rely only on imported goods','Devalue the local currency','Support local producers and craftspeople','Ban local markets'],a:2},
+  {id:98,s:'u5',t:'Which of the following discourages self-reliance in a society?',o:['Entrepreneurship education','High dependence on imported goods','Vocational training','Local content development'],a:1},
+  {id:99,s:'u5',t:'Vocational and technical education promotes self-reliance by:',o:['Making students dependent on others','Providing practical skills for employment or business','Focusing only on theory','Discouraging creativity'],a:1},
+  {id:100,s:'u5',t:'*Igba Boi* also called *Imu Ahia* is a unique indigenous entrepreneurship model of ---- tribe in Nigeria',o:['Igbo','Abakaliki Imu Ahia','Anambra Igba Boi','Ohafia Imu Ahia'],a:0},
+  {id:101,s:'u6',t:'What does social justice primarily aim to promote in a society?',o:['Personal wealth','Equality and fairness','Political rivalry','Cultural dominance'],a:1},
+  {id:102,s:'u6',t:'Which of the following best describes social justice?',o:['The enforcement of religious law','Equal distribution of wealth and opportunities','Political manipulation of resources','Suppression of minority voices'],a:1},
+  {id:103,s:'u6',t:'One major objective of national development is:',o:['Economic monopoly','Social discrimination','Improved standard of living','Tribal favoritism'],a:2},
+  {id:104,s:'u6',t:'Social justice contributes to national development by:',o:['Dividing society by class','Encouraging inequality','Promoting unity and stability','Limiting civil rights'],a:2},
+  {id:105,s:'u6',t:'Which institution is responsible for ensuring social justice in Nigeria?',o:['Political parties','The judiciary','The press','Multinational companies'],a:1},
+  {id:106,s:'u6',t:'Which of the following is not a principle of social justice?',o:['Equity','Human rights','Discrimination','Participation'],a:2},
+  {id:107,s:'u6',t:'A key indicator of national development is:',o:['Increased population','High illiteracy rate','Technological advancement','Political unrest'],a:2},
+  {id:108,s:'u6',t:'Which sector plays the most critical role in achieving national development?',o:['The entertainment sector','The informal sector','The education sector','The criminal sector'],a:2},
+  {id:109,s:'u6',t:'Social justice ensures that every individual:',o:['Gets rich','Is treated fairly regardless of background','Rules the nation','Gains immunity from the law'],a:1},
+  {id:110,s:'u6',t:'Which of these promotes national development through fairness in resource allocation?',o:['Nepotism','Meritocracy','Ethnocentrism','Favoritism'],a:1},
+  {id:111,s:'u6',t:'What is the best definition of law?',o:['Rules made by individuals','The customs of a community','A set of rules enforceable by courts','Religious beliefs of a people'],a:2},
+  {id:112,s:'u6',t:'Which of the following is a characteristic of law?',o:['Optional compliance','Arbitrary judgment','Enforceability','Religious origin'],a:2},
+  {id:113,s:'u6',t:'Public law governs the relationship between:',o:['Private individuals only','Citizens and their families','Individuals and the state','Political parties'],a:2},
+  {id:114,s:'u6',t:'An example of criminal law is:',o:['Divorce proceedings','Will and inheritance','Theft and assault','Property dispute'],a:2},
+  {id:115,s:'u6',t:'Civil law deals with:',o:['Military operations','Crimes and punishments','Disputes between individuals','Government elections'],a:2},
+  {id:116,s:'u6',t:'The law that deals with the organization of government and its functions is:',o:['Customary law','Constitutional law','Tort law','Criminal law'],a:1},
+  {id:117,s:'u6',t:'Customary law is derived from:',o:['The constitution','The president','Local traditions and customs','International treaties'],a:2},
+  {id:118,s:'u6',t:'Which of the following is a source of Nigerian law?',o:['The media','Public opinion','Judicial precedent','Religious belief alone'],a:2},
+  {id:119,s:'u6',t:'Law can be classified into how many broad categories?',o:['One','Two','Three','Five'],a:1},
+  {id:120,s:'u6',t:'The primary aim of law in any society is to:',o:['Promote dictatorship','Maintain order and justice','Encourage disobedience','Empower criminals'],a:1},
+  {id:121,s:'u7',t:'Which arm of government is responsible for interpreting the law?',o:['Executive','Legislature','Judiciary','Police'],a:2},
+  {id:122,s:'u7',t:'The fundamental human rights of citizens are enshrined in the:',o:['Criminal Code','Constitution','National Assembly Rules','Penal Code'],a:1},
+  {id:123,s:'u7',t:'The highest court in Nigeria is the:',o:['Federal High Court','Court of Appeal','Supreme Court','National Industrial Court'],a:2},
+  {id:124,s:'u7',t:'The right to fair hearing is an example of:',o:['Political right','Economic right','Civil right','Social right'],a:2},
+  {id:125,s:'u7',t:'Which of the following rights allows a person to express opinions freely?',o:['Right to life','Right to fair hearing','Right to freedom of expression','Right to property'],a:2},
+  {id:126,s:'u7',t:'The judiciary acts as a check on the:',o:['Executive and legislature','Police and civil service','Local and state governments','Traditional rulers'],a:0},
+  {id:127,s:'u7',t:'Which court in Nigeria handles disputes relating to the constitution?',o:['Magistrate Court','Customary Court','Sharia Court','Supreme Court'],a:3},
+  {id:128,s:'u7',t:'Fundamental human rights are enforceable by:',o:['Local government','Customary law','Court of law','Traditional institutions'],a:2},
+  {id:129,s:'u7',t:'The right to vote and be voted for is a:',o:['Civil right','Political right','Legal right','Economic right'],a:1},
+  {id:130,s:'u7',t:'Judicial independence means the judiciary is:',o:['Controlled by the executive','Influenced by the legislature','Free from external interference','Controlled by the police'],a:2},
+  {id:131,s:'u7',t:'The principle of rule of law ensures that:',o:['Citizens are above the law','Leaders cannot be prosecuted','All citizens are equal before the law','Only the rich obey the law'],a:2},
+  {id:132,s:'u7',t:'The fundamental human right to own property is known as:',o:['Economic right','Social right','Cultural right','Religious right'],a:0},
+  {id:133,s:'u7',t:'The right to practice any religion is called:',o:['Freedom of movement','Freedom of religion','Freedom of association','Freedom of expression'],a:1},
+  {id:134,s:'u7',t:'Which of these rights is not a fundamental human right?',o:['Right to education','Right to vote','Right to cheat in exams','Right to life'],a:2},
+  {id:135,s:'u7',t:'The doctrine of separation of powers ensures that:',o:['One arm dominates others','All powers are given to the executive','Powers are shared among the three arms','Legislature controls the judiciary'],a:2},
+  {id:136,s:'u7',t:'The judiciary helps to protect the rights of citizens by:',o:['Making laws','Judging cases fairly','Electing leaders','Conducting elections'],a:1},
+  {id:137,s:'u7',t:'The power of the judiciary to declare laws unconstitutional is called:',o:['Judicial activism','Judicial declaration','Judicial supremacy','Judicial review'],a:3},
+  {id:138,s:'u7',t:'Fundamental human rights can be suspended during:',o:['General elections','Budget presentation','State of emergency','Sports tournaments'],a:2},
+  {id:139,s:'u7',t:'An independent judiciary promotes:',o:['Dictatorship','Injustice','Rule of law','Nepotism'],a:2},
+  {id:140,s:'u7',t:'Which of these is a function of the judiciary?',o:['Conducting elections','Interpreting laws','Making budgets','Enforcing traffic rules'],a:1},
+  {id:141,s:'u8',t:'Which of the following is a core Nigerian value?',o:['Selfishness','Corruption','Integrity','Disobedience'],a:2},
+  {id:142,s:'u8',t:'Respect for elders in Nigeria is an example of:',o:['Legal law','Cultural norm','National policy','Economic rule'],a:1},
+  {id:143,s:'u8',t:'The Nigerian society encourages all EXCEPT:',o:['Honesty','Hard work','Laziness','Patriotism'],a:2},
+  {id:144,s:'u8',t:'A shared system of beliefs and behaviors within a society is known as:',o:['Religion','Politics','Norms','Value system'],a:3},
+  {id:145,s:'u8',t:'Which of these is NOT a Nigerian traditional value?',o:['Hospitality','Unity','Individualism','Respect'],a:2},
+  {id:146,s:'u8',t:'A person born in Nigeria to Nigerian parents is a citizen by:',o:['Registration','Birth','Naturalization','Indigenization'],a:1},
+  {id:147,s:'u8',t:'Which of these is NOT a mode of acquiring Nigerian citizenship?',o:['Birth','Marriage','Registration','Naturalization'],a:1},
+  {id:148,s:'u8',t:'Citizenship by naturalization in Nigeria requires the applicant to have lived in Nigeria for at least:',o:['10 years','20 years','5 years','15 years'],a:2},
+  {id:149,s:'u8',t:'Foreigners can become citizens of Nigeria through:',o:['Deportation','Registration and Naturalization','Refugee status','Temporary residence'],a:1},
+  {id:150,s:'u8',t:'A child born abroad to Nigerian parents is a citizen by:',o:['Marriage','Law','Birth','Registration'],a:2},
+  {id:151,s:'u8',t:'Which of these is a civic responsibility of a Nigerian citizen?',o:['Paying taxes','Joining the army','Marrying early','Traveling abroad'],a:0},
+  {id:152,s:'u8',t:'The duty of obeying laws in a country is known as:',o:['Cultural behavior','Civic responsibility','Religious act','Political will'],a:1},
+  {id:153,s:'u8',t:'Which of the following is NOT a right of a Nigerian citizen?',o:['Freedom of speech','Right to vote','Right to traffic violation','Right to life'],a:2},
+  {id:154,s:'u8',t:'Participation in democratic governance is a:',o:['Traditional law','Civic duty','Religious law','Political right'],a:1},
+  {id:155,s:'u8',t:'A responsible citizen should do all the following EXCEPT:',o:['Pay tax','Obey laws','Promote violence','Defend the nation'],a:2},
+  {id:156,s:'u8',t:'The promotion of indigenous languages in Nigeria is important because:',o:['It discourages Western culture','It leads to disunity','It preserves culture and identity','It prevents migration'],a:2},
+  {id:157,s:'u8',t:'Which of these is a major indigenous language in Nigeria?',o:['Swahili','Zulu','Yoruba','Arabic'],a:2},
+  {id:158,s:'u8',t:'The use of local languages in education encourages:',o:['Corruption','Cultural erosion','Better understanding','Political domination'],a:2},
+  {id:159,s:'u8',t:'Which of these is considered a negative social behavior in Nigeria?',o:['Punctuality','Cultism','Patriotism','Respect'],a:1},
+  {id:160,s:'u8',t:'The act of taking what does not belong to you is:',o:['Honesty','Corruption','Forgiveness','Empathy'],a:1},
+  {id:161,s:'u9',t:'Which of the following best defines cultism?',o:['An open group formed for social purposes','A secret society with hidden rituals and oaths','A religious organization','A government-sponsored club'],a:1},
+  {id:162,s:'u9',t:'The main aim of campus cult groups is to:',o:['Organize school debates','Promote good morals','Intimidate and manipulate others','Help school authorities'],a:2},
+  {id:163,s:'u9',t:'Which of these is a common symbol of cult groups?',o:['Books','Peace signs','Weapons','School uniforms'],a:2},
+  {id:164,s:'u9',t:'One of the main reasons students join cult groups is:',o:['For academic excellence','Parental pressure','To feel powerful and protected','To serve the community'],a:2},
+  {id:165,s:'u9',t:'A major consequence of cultism in schools is:',o:['Improved academic performance','Increase in crime and violence','Better discipline','Enhanced student unity'],a:1},
+  {id:166,s:'u9',t:'Kidnapping can best be described as:',o:['Giving someone a lift','Holding someone against their will for ransom or other gains','Helping someone cross the road','Arresting a criminal'],a:1},
+  {id:167,s:'u9',t:'A major motive for kidnapping is:',o:['Charity','Enjoyment','Ransom or revenge','Worship'],a:2},
+  {id:168,s:'u9',t:'Which of the following groups is most affected by kidnapping in Nigeria?',o:['Farmers only','Only school children','All categories of people','Only politicians'],a:2},
+  {id:169,s:'u9',t:'One way to reduce kidnapping is through:',o:['Building more shopping malls','Increasing police presence and intelligence','Creating more cult groups','Ignoring the problem'],a:1},
+  {id:170,s:'u9',t:'The unlawful taking of someone for personal gain is called:',o:['Assassination','Robbery','Kidnapping','Pilgrimage'],a:2},
+  {id:171,s:'u9',t:'Which of the following is considered a social vice?',o:['Volunteering','Examination malpractice','Entrepreneurship','Sportsmanship'],a:1},
+  {id:172,s:'u9',t:'Drug abuse can be defined as:',o:['Taking drugs only on prescription','Misusing or overusing drugs','Taking water regularly','Using herbs for cooking'],a:1},
+  {id:173,s:'u9',t:'A common effect of drug abuse is:',o:['Mental stability','High productivity','Addiction and health problems','Respect from society'],a:2},
+  {id:174,s:'u9',t:'Cybercrime is mostly committed using:',o:['Typewriters','Farming tools','Computers and the internet','Books'],a:2},
+  {id:175,s:'u9',t:'Internet fraud is also known as:',o:['Email etiquette','Yahoo Yahoo','ICT literacy','Data mining'],a:1},
+  {id:176,s:'u9',t:'Prostitution is considered a vice because it:',o:['Encourages reading','Promotes tourism','Endangers public morals and health','Builds self-esteem'],a:2},
+  {id:177,s:'u9',t:'Which of the following is a major cause of armed robbery?',o:['Too much education','Poverty and unemployment','Excess food','Good governance'],a:1},
+  {id:178,s:'u9',t:'Peer pressure often leads young people into:',o:['Self-development','Negative behavior and bad habits','Job opportunities','Public speaking'],a:1},
+  {id:179,s:'u9',t:'A preventive measure against social vices in schools is:',o:['Promoting cultism','Encouraging poor parenting','Moral and civic education','Reducing school fees'],a:2},
+  {id:180,s:'u9',t:'A person who lures and abducts children is best described as a:',o:['Teacher','Pedestrian','Kidnapper','Barber'],a:2},
+  {id:181,s:'u10',t:'What do the 3Rs in post-civil war Nigeria stand for?',o:['Reconciliation, Revolution, Reformation','Reconstruction, Rehabilitation, Re-orientation','Redemption, Repatriation, Reconciliation','Regulation, Renewal, Rebuilding'],a:1},
+  {id:182,s:'u10',t:'The aim of Reconstruction in the 3Rs policy was to:',o:['Create a new constitution','Rebuild war-ravaged areas and infrastructure','Punish the rebels','Reorganize political parties'],a:1},
+  {id:183,s:'u10',t:'Re-orientation as part of the 3Rs refers to:',o:['Changing the geographical orientation of the nation','Re-educating citizens to accept national unity and moral values','Redirecting trade routes','Rewriting the constitution'],a:1},
+  {id:184,s:'u10',t:'Which of the following best describes moral values?',o:['Beliefs about what is right and wrong behavior','Rules enforced by the police','Religious doctrines only','Laws made by government'],a:0},
+  {id:185,s:'u10',t:'National values are important because they:',o:['Promote selfishness and tribalism','Encourage military rule','Guide citizens toward responsible and patriotic behavior','Diminish national pride'],a:2},
+  {id:186,s:'u10',t:'One of the key goals of rehabilitation under the 3Rs was to:',o:['Deport ex-soldiers','Integrate former soldiers and displaced persons into society','Establish foreign embassies','Remove traditional institutions'],a:1},
+  {id:187,s:'u10',t:'A major focus of the Re-orientation policy was to:',o:['Promote political apathy','Instill discipline, patriotism, and national loyalty','Support tribal dominance','Disband national organizations'],a:1},
+  {id:188,s:'u10',t:'National symbols help promote:',o:['Religious differences','Ethnic supremacy','National unity and pride','Corruption and nepotism'],a:2},
+  {id:189,s:'u10',t:'Which of the following is NOT a moral value?',o:['Honesty','Tolerance','Bribery','Responsibility'],a:2},
+  {id:190,s:'u10',t:'Which body plays a key role in promoting national orientation in Nigeria today?',o:['Nigerian Broadcasting Commission (NBC)','National Orientation Agency (NOA)','National Population Commission','Nigerian Stock Exchange'],a:1},
+  {id:191,s:'u10',t:'The 3Rs policy was introduced in Nigeria after the:',o:['First Republic','Civil War (1967–1970)','Independence in 1960','1999 Constitution'],a:1},
+  {id:192,s:'u10',t:'One way to promote national values in schools is through:',o:['Cultural discrimination','Teaching Civic Education','Political campaigns','Unethical practices'],a:1},
+  {id:193,s:'u10',t:'Which of these is a consequence of lack of moral values in society?',o:['National integration','Peaceful coexistence','Corruption and social decay','Economic growth'],a:2},
+  {id:194,s:'u10',t:'Which of the following best defines patriotism?',o:['Loyalty to one\'s ethnic group','Love and devotion to one\'s country','Obeying only family traditions','Supporting only foreign policies'],a:1},
+  {id:195,s:'u10',t:'A core objective of national re-orientation is to:',o:['Emphasize regionalism','Promote unity and ethical behavior','Reduce government spending','Encourage foreign religion'],a:1},
+  {id:196,s:'u10',t:'Which of these is a national value?',o:['Tribalism','Disrespect','Integrity','Nepotism'],a:2},
+  {id:197,s:'u10',t:'Which national symbol represents the authority of the President in Nigeria?',o:['Coat of Arms','National Flag','The Mace','The National Anthem'],a:2},
+  {id:198,s:'u10',t:'Teaching of moral and civic values can help curb:',o:['Academic excellence','Political participation','Electoral violence and social vices','National unity'],a:2},
+  {id:199,s:'u10',t:'Who introduced the 3Rs policy in Nigeria?',o:['Yakubu Gowon','Nnamdi Azikiwe','Olusegun Obasanjo','Muhammadu Buhari'],a:0},
+  {id:200,s:'u10',t:'A society with strong moral values will likely experience:',o:['Violence and instability','Peace, development, and good governance','Tribal conflict','Economic backwardness'],a:1},
+  {id:201,s:'u11',t:'What was the primary aim of Operation Feed the Nation (OFN)?',o:['Promote industrialization','Reduce unemployment','Boost agricultural production and self-sufficiency','Improve foreign relations'],a:2},
+  {id:202,s:'u11',t:'In what year was Operation Feed the Nation launched in Nigeria?',o:['1970','1976','1980','1985'],a:1},
+  {id:203,s:'u11',t:'Which Nigerian Head of State initiated Operation Feed the Nation?',o:['General Yakubu Gowon','General Ibrahim Babangida','General Olusegun Obasanjo','General Murtala Mohammed'],a:2},
+  {id:204,s:'u11',t:'Operation Feed the Nation was primarily targeted at which sector?',o:['Oil and gas','Manufacturing','Agriculture','Education'],a:2},
+  {id:205,s:'u11',t:'Which group was NOT directly targeted by the OFN programme?',o:['Students','Civil servants','Farmers','Foreign investors'],a:3},
+  {id:206,s:'u11',t:'One major strategy of OFN was to encourage the participation of:',o:['Only commercial farmers','All Nigerians including urban dwellers','Politicians and businessmen','International donors'],a:1},
+  {id:207,s:'u11',t:'What was a major limitation of Operation Feed the Nation?',o:['It discouraged youth involvement','It lacked government support','Poor implementation and lack of continuity','It led to food surpluses'],a:2},
+  {id:208,s:'u11',t:'Operation Feed the Nation was later replaced by which programme?',o:['Green Revolution','National Economic Empowerment','Better Life for Rural Women','Structural Adjustment Programme'],a:0},
+  {id:209,s:'u11',t:'Which of the following best describes the outcome of OFN?',o:['It made Nigeria a net exporter of food','It had limited success and did not meet its goals','It permanently solved Nigeria\'s food crisis','It was rejected by farmers'],a:1},
+  {id:210,s:'u11',t:'A key feature of OFN was:',o:['Distribution of tractors and fertilizers','Privatization of farmlands','Total ban on food imports','Abolishment of traditional farming methods'],a:0},
+  {id:211,s:'u11',t:'What was the primary objective of the Green Revolution in Nigeria?',o:['Promote foreign investment','Increase agricultural productivity','Expand industrialization','Encourage urban migration'],a:1},
+  {id:212,s:'u11',t:'The Green Revolution in Nigeria was most active during which decade?',o:['1950s','1960s','1970s','1980s'],a:3},
+  {id:213,s:'u11',t:'Which Nigerian Head of State was instrumental in initiating the Green Revolution policy?',o:['Olusegun Obasanjo','Yakubu Gowon','Muhammadu Buhari','Shehu Shagari'],a:3},
+  {id:214,s:'u11',t:'Which of the following was NOT a goal of the Green Revolution in Nigeria?',o:['Achieve food self-sufficiency','Reduce agricultural imports','Improve rural livelihoods','Increase petroleum exports'],a:3},
+  {id:215,s:'u11',t:'The Green Revolution emphasized the use of which of the following in agriculture?',o:['Organic fertilizers only','Traditional tools','Improved seeds and fertilizers','Manual labor only'],a:2},
+  {id:216,s:'u11',t:'Which of these was a major limitation of the Green Revolution in Nigeria?',o:['Over-industrialization','Poor road networks','Excessive rainfall','Dependence on oil revenue'],a:1},
+  {id:217,s:'u11',t:'Which organization played a significant role in the implementation of agricultural projects during the Green Revolution in Nigeria?',o:['NNPC','NAFDAC','River Basin Development Authorities','EFCC'],a:2},
+  {id:218,s:'u11',t:'One of the criticisms of the Green Revolution in Nigeria was that it primarily benefited:',o:['Urban poor','Oil companies','Large-scale farmers','Local artisans'],a:2},
+  {id:219,s:'u11',t:'Which of the following crops benefited most from the Green Revolution in Nigeria?',o:['Cocoa','Millet','Rice and maize','Cotton'],a:2},
+  {id:220,s:'u11',t:'The failure of the Green Revolution in Nigeria has been linked to:',o:['Excessive government spending','Poor agricultural extension services','Increase in oil prices','Ban on fertilizer use'],a:1},
+  {id:221,s:'u11',t:'What are austerity measures?',o:['Government actions to increase public spending','Policies aimed at reducing government budget deficits','Laws to restrict foreign investments','Strategies to encourage consumer spending'],a:1},
+  {id:222,s:'u11',t:'A major reason for implementing austerity measures in Nigeria during the 1980s was:',o:['Increase in oil prices','Excessive foreign exchange reserves','Economic recession and falling oil revenues','High level of industrialization'],a:2},
+  {id:223,s:'u11',t:'Which Nigerian administration introduced the Structural Adjustment Programme (SAP) that included austerity measures?',o:['Olusegun Obasanjo (1999–2007)','Muhammadu Buhari (2015–2023)','Ibrahim Babangida (1985–1993)','Goodluck Jonathan (2010–2015)'],a:2},
+  {id:224,s:'u11',t:'Austerity measures often involve the following, except:',o:['Reduction in public sector salaries','Subsidy removal','Increase in government spending','Currency devaluation'],a:2},
+  {id:225,s:'u11',t:'One of the major impacts of austerity measures on ordinary Nigerians is:',o:['Lower cost of living','Improved access to healthcare','Higher unemployment and inflation','Free education at all levels'],a:2},
+  {id:226,s:'u11',t:'Which of the following sectors is usually most affected by austerity measures?',o:['Oil and gas','Public service','Entertainment industry','Manufacturing'],a:1},
+  {id:227,s:'u11',t:'Which international organization often supports countries like Nigeria in implementing austerity-related reforms?',o:['African Union','United Nations','World Health Organization','International Monetary Fund (IMF)'],a:3},
+  {id:228,s:'u11',t:'A common criticism of austerity measures in Nigeria is that they:',o:['Lead to rapid economic growth','Increase foreign reserves','Deepen poverty and inequality','Strengthen the naira'],a:2},
+  {id:229,s:'u11',t:'The removal of fuel subsidy in Nigeria is an example of:',o:['Economic liberalization','Austerity measure','Nationalization','Fiscal expansion'],a:1},
+  {id:230,s:'u11',t:'The main goal of austerity measures is to:',o:['Expand the size of government','Reduce inflation by printing more money','Cut government debt and restore economic stability','Increase minimum wage'],a:2},
+  {id:231,s:'u11',t:'Who introduced the War Against Indiscipline (WAI) in Nigeria?',o:['General Yakubu Gowon','General Olusegun Obasanjo','Major General Muhammadu Buhari','General Ibrahim Babangida'],a:2},
+  {id:232,s:'u11',t:'In which year was the War against Indiscipline (WAI) launched?',o:['1976','1983','1984','1985'],a:2},
+  {id:233,s:'u11',t:'The War against Indiscipline was primarily aimed at combating:',o:['Armed robbery only','Illiteracy','Corruption and social disorder','Electoral malpractice'],a:2},
+  {id:234,s:'u11',t:'Which of the following was not one of the phases of WAI?',o:['Environmental sanitation','Queue culture','Free education','Nationalism and patriotism'],a:2},
+  {id:235,s:'u11',t:'The War against Indiscipline (WAI) campaign was a brainchild of:',o:['The Nigerian Senate','The Supreme Military Council','The Nigerian Labour Congress','The National Assembly'],a:1},
+  {id:236,s:'u11',t:'One of the key behaviours promoted by WAI was:',o:['Skipping queues','Bribery and corruption','Orderliness in public places','Indecent dressing'],a:2},
+  {id:237,s:'u11',t:'How many phases did the original WAI program have?',o:['2','5','6','4'],a:1},
+  {id:238,s:'u11',t:'Which military leader succeeded General Buhari and scrapped the WAI program?',o:['General Sani Abacha','General Ibrahim Babangida','General Abdulsalami Abubakar','General Yakubu Gowon'],a:1},
+  {id:239,s:'u11',t:'The War Against Indiscipline helped to instill:',o:['Military dictatorship','Democratic rule','Civic responsibility and discipline','Political opposition'],a:2},
+  {id:240,s:'u11',t:'Which government agency revived WAI as "WAI Brigade"?',o:['National Youth Service Corps','Nigerian Army','Federal Road Safety Corps','National Orientation Agency (NOA)'],a:3},
+  {id:241,s:'u11',t:'What does WAIC stand for in Nigeria?',o:['West African Investment Corporation','War Against Indiscipline and Corruption','Workers Association in Industry and Commerce','War Against Internal Conflict'],a:1},
+  {id:242,s:'u11',t:'The War Against Indiscipline (WAI) was first launched during the regime of which Nigerian leader?',o:['Olusegun Obasanjo','Ibrahim Babangida','Muhammadu Buhari','Sani Abacha'],a:2},
+  {id:243,s:'u11',t:'In which year was the original War Against Indiscipline (WAI) introduced?',o:['1983','1984','1985','1986'],a:1},
+  {id:244,s:'u11',t:'The War Against Indiscipline and Corruption (WAIC) was later introduced under which Nigerian president?',o:['Goodluck Jonathan','Umaru Musa Yar\'Adua','Muhammadu Buhari (Second Term)','Olusegun Obasanjo'],a:2},
+  {id:245,s:'u11',t:'What was the primary objective of WAIC?',o:['Promoting foreign investment','Reducing tax rates','Combating corruption and promoting discipline','Encouraging youth migration'],a:2},
+  {id:246,s:'u11',t:'Which agency was most associated with executing WAIC?',o:['Economic and Financial Crimes Commission (EFCC)','National Orientation Agency (NOA)','Code of Conduct Bureau (CCB)','Independent Corrupt Practices Commission (ICPC)'],a:0},
+  {id:247,s:'u11',t:'One of the key focus areas of WAI and WAIC was to instill what in public life?',o:['Fear','Discipline','Wealth creation','Infrastructure development'],a:1},
+  {id:248,s:'u11',t:'Which of the following was not a component of the original WAI campaign?',o:['Queue Culture','Environmental Sanitation','Anti-Corruption Tribunal','Nationalism and Patriotism'],a:2},
+  {id:249,s:'u11',t:'WAIC under Buhari\'s democratic government was perceived by critics as:',o:['Completely ineffective','A political witch-hunt','A youth empowerment program','A financial aid scheme'],a:1},
+  {id:250,s:'u11',t:'Which of these best describes the challenges faced by WAIC in Nigeria?',o:['High public support and zero opposition','Adequate funding and full media coverage','Selective prosecution and weak institutions','Foreign intervention and economic sanctions'],a:2},
+  {id:251,s:'u11',t:'What was the main goal of Mass Mobilization for Self-Reliance, Social Justice, and Economic Recovery (MAMSER)?',o:['Promote political violence','Encourage dependency on foreign aid','Promote self-reliance and national consciousness','Introduce military rule'],a:2},
+  {id:252,s:'u11',t:'When was MAMSER officially launched in Nigeria?',o:['1983','1986','1993','2000'],a:1},
+  {id:253,s:'u11',t:'Which Nigerian leader introduced MAMSER?',o:['General Yakubu Gowon','General Ibrahim Babangida','President Olusegun Obasanjo','General Sani Abacha'],a:1},
+  {id:254,s:'u11',t:'MAMSER aimed at all of the following EXCEPT:',o:['Promoting democratic values','Creating public awareness','Supporting military dictatorship','Encouraging community development'],a:2},
+  {id:255,s:'u11',t:'What replaced MAMSER in 1993 as part of a restructured national orientation effort?',o:['EFCC','NOA (National Orientation Agency)','ICPC','NYSC'],a:1},
+  {id:256,s:'u11',t:'Which of the following best describes self-reliance as promoted by MAMSER?',o:['Relying on international support','Depending on imported goods','Using local resources and skills for development','Seeking foreign investors only'],a:2},
+  {id:257,s:'u11',t:'One major strategy of MAMSER was:',o:['Ignoring rural communities','Mobilizing people for arms struggle','Sensitizing citizens through mass education','Closing local industries'],a:2},
+  {id:258,s:'u11',t:'MAMSER encouraged Nigerians to:',o:['Embrace foreign culture','Participate in nation-building','Avoid paying taxes','Rely solely on government employment'],a:1},
+  {id:259,s:'u11',t:'The slogan "Think Nigeria, Buy Nigeria" relates to which aspect of MAMSER?',o:['Political education','Economic self-reliance','Religious tolerance','International diplomacy'],a:1},
+  {id:260,s:'u11',t:'One of the values promoted by MAMSER was:',o:['Corruption','Tribalism','Patriotism','Apathy'],a:2},
+  {id:261,s:'u11',t:'What year was the National Orientation Agency (NOA) established in Nigeria?',o:['1983','1986','1993','1999'],a:2},
+  {id:262,s:'u11',t:'The National Orientation Agency was established to replace which of the following?',o:['MAMSER','NAFDAC','NYSC','NDLEA'],a:0},
+  {id:263,s:'u11',t:'What does MAMSER stand for?',o:['Mass Mobilization for Social and Economic Rights','Mass Mobilization for Self Reliance, Social Justice and Economic Recovery','Mobilization Against Social and Economic Recession','Ministry for Agricultural and Social Empowerment'],a:1},
+  {id:264,s:'u11',t:'Which of the following is NOT a function of the National Orientation Agency?',o:['Promoting patriotism and national unity','Enforcing criminal laws','Disseminating government policies','Educating the public on civic responsibilities'],a:1},
+  {id:265,s:'u11',t:'The motto of the National Orientation Agency is:',o:['Justice, Unity and Peace','Patriotism, Integrity and National Service','Do the Right Thing','Nigeria First'],a:2},
+  {id:266,s:'u11',t:'Who appoints the Director-General of the National Orientation Agency?',o:['Senate','Minister of Information','President of Nigeria','National Assembly'],a:2},
+  {id:267,s:'u11',t:'Which government ministry supervises the National Orientation Agency?',o:['Ministry of Youth and Sports','Ministry of Education','Ministry of Information and National Orientation','Ministry of Internal Affairs'],a:2},
+  {id:268,s:'u11',t:'Which of the following best describes one of NOA\'s core responsibilities?',o:['Conducting military recruitment','Educating citizens on electoral processes','Collecting taxes','Issuing business licenses'],a:1},
+  {id:269,s:'u11',t:'One of the key campaigns of the NOA is called:',o:['Not Too Young to Run','Do the Right Thing','Green Nigeria','Vote Right'],a:1},
+  {id:270,s:'u11',t:'The headquarters of the National Orientation Agency is located in which Nigerian city?',o:['Lagos','Enugu','Abuja','Kaduna'],a:2},
+  {id:271,s:'u11',t:'Who launched the Operation Feed the Nation program?',o:['General Yakubu Gowon','General Olusegun Obasanjo','Shehu Shagari','Murtala Mohammed'],a:1},
+  {id:272,s:'u11',t:'What was the major aim of OFN?',o:['Eradicate corruption','Improve literacy','Increase food production','Promote industrialization'],a:2},
+  {id:273,s:'u11',t:'What was a major limitation of the Green Revolution?',o:['Excessive imports','Poor implementation and corruption','Lack of military support','Natural disasters'],a:1},
+  {id:274,s:'u11',t:'Green Revolution focused on...',o:['Military expansion','Urban renewal','Agricultural self-sufficiency','Education reform'],a:2},
+  {id:275,s:'u11',t:'WAI emphasized all EXCEPT...',o:['Orderliness','Patriotism','Bribery','Discipline'],a:2},
+  {id:276,s:'u11',t:'WAIC was introduced by...',o:['Buhari/Idiagbon','Obasanjo','Abacha','Babangida'],a:0},
+  {id:277,s:'u11',t:'MAMSER was launched in what year?',o:['1983','1985','1987','1989'],a:1},
+  {id:278,s:'u11',t:'The MAMSER programme was established under which regime?',o:['Shehu Shagari','Muhammadu Buhari','Ibrahim Babangida','Sani Abacha'],a:2},
+  {id:279,s:'u11',t:'The leader of MAMSER was...',o:['Jerry Gana','Dora Akunyili','Bolaji Akinyemi','Ibrahim Dasuki'],a:0},
+  {id:280,s:'u11',t:'Which of the following was not emphasized by WAI?',o:['Loyalty','Discipline','Accountability','Foreign investment'],a:3},
+  {id:281,s:'u12',t:'Who is the current President of Nigeria as of 2025?',o:['Muhammadu Buhari','Bola Ahmed Tinubu','Goodluck Jonathan','Atiku Abubakar'],a:1},
+  {id:282,s:'u12',t:'Which political party is currently in power at the federal level in Nigeria?',o:['PDP','LP','APC','SDP'],a:2},
+  {id:283,s:'u12',t:'Who is the current Senate President of Nigeria?',o:['Ahmed Lawan','Godswill Akpabio','Orji Uzor Kalu','David Mark'],a:1},
+  {id:284,s:'u12',t:'What is the name of the student loan act signed into law in 2023?',o:['National Education Bill','Student Support Act','Student Loan Act','Nigerian Tertiary Education Fund Act'],a:2},
+  {id:285,s:'u12',t:'Which region in Nigeria recently witnessed renewed agitation for Biafra?',o:['South-South','North-East','South-East','North-Central'],a:2},
+  {id:286,s:'u12',t:'The removal of fuel subsidy in 2023 led to which of the following?',o:['Decrease in transportation cost','Inflation and protests','Strengthening of the naira','Decrease in unemployment'],a:1},
+  {id:287,s:'u12',t:'Who is the current Minister of the Federal Capital Territory (FCT)?',o:['Babatunde Fashola','Nyesom Wike','Nasir El-Rufai','Rotimi Amaechi'],a:1},
+  {id:288,s:'u12',t:'Which of the following is a major cause of insecurity in Northern Nigeria?',o:['Oil spillage','Boko Haram insurgency','Pirate attacks','Land use conflict'],a:1},
+  {id:289,s:'u12',t:'Nigeria\'s 2024 budget is tagged:',o:['Budget of National Revival','Budget of Hope','Budget of Renewed Hope','Budget of Transformation'],a:2},
+  {id:290,s:'u12',t:'The National Assembly is made up of how many chambers?',o:['One','Two','Three','Four'],a:1},
+  {id:291,s:'u12',t:'Which Nigerian music genre has gained massive global popularity in recent years?',o:['Fuji','Juju','Afrobeats','Highlife'],a:2},
+  {id:292,s:'u12',t:'Who won the 2024 Headies Award for Artiste of the Year?',o:['Burna Boy','Rema','Asake','Davido'],a:2},
+  {id:293,s:'u12',t:'Which Nigerian filmmaker\'s movie was nominated for the 2024 Oscars?',o:['Kunle Afolayan','Mo Abudu','Genevieve Nnaji','Kemi Adetiba'],a:0},
+  {id:294,s:'u12',t:'Which Nigerian cultural festival attracts global attention in Osun State?',o:['Argungu Festival','Eyo Festival','Osun-Osogbo Festival','New Yam Festival'],a:2},
+  {id:295,s:'u12',t:'What is the official language of Nigeria?',o:['Hausa','Yoruba','Igbo','English'],a:3},
+  {id:296,s:'u12',t:'Which Nigerian fashion event is internationally recognized?',o:['Lagos Fashion Week','Abuja Couture Show','Port Harcourt Runway','Naija Designers Gala'],a:0},
+  {id:297,s:'u12',t:'Which Nigerian was appointed Director-General of the World Trade Organization in 2021 and still holds the position?',o:['Dora Akunyili','Ngozi Okonjo-Iweala','Obiageli Ezekwesili','Amina Mohammed'],a:1},
+  {id:298,s:'u12',t:'The Yoruba traditional worship of \'Sango\' represents what?',o:['God of Iron','God of Water','God of Thunder','God of Harvest'],a:2},
+  {id:299,s:'u12',t:'Which Nigerian author is known for promoting feminist literature and global advocacy?',o:['Chimamanda Ngozi Adichie','Wole Soyinka','Buchi Emecheta','Helon Habila'],a:0},
+  {id:300,s:'u12',t:'What is the major impact of Nollywood on Nigerian culture?',o:['Promotes only Western values','Diminishes traditional beliefs','Promotes local stories and cultural identity','Focuses only on politics'],a:2},
 ];
 
-// ═══════════════════════════════════════════
-// AUTH  (email-keyed localStorage)
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
+// AUTH & PER-USER STORAGE
+// ═══════════════════════════════════
 let isSignup = false;
-let currentUser = null; // { email, name }
-let cards = {};         // spaced-rep data
+let U = null; // current user object
 
-function storageKey(email){ return 'gesquiz_' + email.toLowerCase().trim(); }
+function uKey(e){ return 'gesquiz__' + e.toLowerCase().trim(); }
 
-function loadUser(email){
-  try {
-    const raw = localStorage.getItem(storageKey(email));
-    return raw ? JSON.parse(raw) : null;
-  } catch(e){ return null; }
+function loadU(email){
+  try{
+    const r = localStorage.getItem(uKey(email));
+    if(!r) return null;
+    const d = JSON.parse(r);
+    d.failBank = new Set(d.failBank||[]);
+    return d;
+  }catch(e){ return null; }
 }
 
-function saveUser(){
-  if (!currentUser) return;
-  const data = loadUser(currentUser.email) || {};
-  data.name = currentUser.name;
-  data.cards = cards;
-  localStorage.setItem(storageKey(currentUser.email), JSON.stringify(data));
-  showToast();
+function saveU(){
+  if(!U) return;
+  localStorage.setItem(uKey(U.email), JSON.stringify({
+    name: U.name,
+    failBank: [...U.failBank],
+    totalAttempted: U.totalAttempted,
+    bestScore: U.bestScore,
+    history: U.history
+  }));
 }
 
-function toggleMode(){
+function toggleAuth(){
   isSignup = !isSignup;
-  document.getElementById('authTitle').textContent  = isSignup ? 'Create Account ✨' : 'Welcome Back 👋';
-  document.getElementById('authSub').textContent    = isSignup
-    ? 'Enter your name and email to get started.'
-    : 'Sign in with your email to save and track your progress.';
-  document.getElementById('nameGroup').style.display = isSignup ? 'block' : 'none';
-  document.getElementById('switchText').textContent  = isSignup ? 'Already have an account?' : 'New here?';
-  document.getElementById('switchLink').textContent  = isSignup ? ' Sign in' : ' Create account';
-  clearErrors();
+  document.getElementById('authH').textContent  = isSignup ? 'Create Account ✨' : 'Welcome Back 👋';
+  document.getElementById('authSub').textContent = isSignup ? 'Enter your name and email to get started.' : 'Sign in with your email. Your scores and progress are saved on this device.';
+  document.getElementById('nameGrp').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('swTxt').textContent  = isSignup ? 'Already have an account?' : 'New here?';
+  document.getElementById('swLink').textContent = isSignup ? ' Sign in' : ' Create account';
+  clearErrs();
 }
 
-function clearErrors(){
-  ['emailErr','nameErr'].forEach(id => document.getElementById(id).classList.remove('show'));
-  ['emailInput','nameInput'].forEach(id => document.getElementById(id).classList.remove('error'));
+function goToAuth(signIn){
+  // signIn=true -> "I already have an account" (login mode)
+  // signIn=false -> "Get Started" (signup mode)
+  isSignup = !signIn;
+  document.getElementById('authH').textContent  = isSignup ? 'Create Account ✨' : 'Welcome Back 👋';
+  document.getElementById('authSub').textContent = isSignup ? 'Enter your name and email to get started.' : 'Sign in with your email. Your scores and progress are saved on this device.';
+  document.getElementById('nameGrp').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('swTxt').textContent  = isSignup ? 'Already have an account?' : 'New here?';
+  document.getElementById('swLink').textContent = isSignup ? ' Sign in' : ' Create account';
+  clearErrs();
+  show('login');
 }
 
-function handleAuth(){
-  clearErrors();
-  const email = document.getElementById('emailInput').value.trim();
-  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function clearErrs(){
+  ['emailErr','nameErr'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['emailIn','nameIn'].forEach(id=>document.getElementById(id).classList.remove('bad'));
+}
+
+function doAuth(){
+  clearErrs();
+  const email = document.getElementById('emailIn').value.trim();
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   let ok = true;
-
-  if (!emailRe.test(email)){
-    document.getElementById('emailErr').classList.add('show');
-    document.getElementById('emailInput').classList.add('error');
-    ok = false;
+  if(!re.test(email)){
+    document.getElementById('emailErr').textContent='Please enter a valid email.';
+    document.getElementById('emailErr').classList.add('on');
+    document.getElementById('emailIn').classList.add('bad');
+    ok=false;
   }
-
-  if (isSignup){
-    const name = document.getElementById('nameInput').value.trim();
-    if (!name){
-      document.getElementById('nameErr').classList.add('show');
-      document.getElementById('nameInput').classList.add('error');
-      ok = false;
+  if(isSignup){
+    const name = document.getElementById('nameIn').value.trim();
+    if(!name){
+      document.getElementById('nameErr').classList.add('on');
+      document.getElementById('nameIn').classList.add('bad');
+      ok=false;
     }
-    if (!ok) return;
-    // register (or overwrite if they sign up again)
-    const existing = loadUser(email);
-    currentUser = { email, name };
-    cards = existing ? (existing.cards || {}) : {};
-    finishLogin();
+    if(!ok) return;
+    const ex = loadU(email);
+    U = { email, name,
+      failBank: ex ? ex.failBank : new Set(),
+      totalAttempted: ex ? (ex.totalAttempted||0) : 0,
+      bestScore: ex ? (ex.bestScore||null) : null,
+      history: ex ? (ex.history||[]) : []
+    };
+    saveU(); enterHome();
   } else {
-    if (!ok) return;
-    const existing = loadUser(email);
-    if (!existing){
-      // nudge them to sign up
-      document.getElementById('emailErr').textContent = 'No account found. Create one below.';
-      document.getElementById('emailErr').classList.add('show');
-      document.getElementById('emailInput').classList.add('error');
+    if(!ok) return;
+    const ex = loadU(email);
+    if(!ex){
+      document.getElementById('emailErr').textContent='No account found. Please create one.';
+      document.getElementById('emailErr').classList.add('on');
+      document.getElementById('emailIn').classList.add('bad');
       return;
     }
-    currentUser = { email, name: existing.name || email.split('@')[0] };
-    cards = existing.cards || {};
-    finishLogin();
+    U = { email, name:ex.name, failBank:ex.failBank,
+      totalAttempted:ex.totalAttempted||0, bestScore:ex.bestScore||null, history:ex.history||[] };
+    enterHome();
   }
 }
+document.getElementById('emailIn').addEventListener('keydown',e=>{if(e.key==='Enter')doAuth();});
+document.getElementById('nameIn').addEventListener('keydown', e=>{if(e.key==='Enter')doAuth();});
 
-function finishLogin(){
-  document.getElementById('chipEmail').textContent = currentUser.email;
-  document.getElementById('userGreet').textContent = currentUser.name;
-  updateHome();
-  showScreen('home');
+function doLogout(){
+  U=null;
+  document.getElementById('emailIn').value='';
+  document.getElementById('nameIn').value='';
+  isSignup=false;
+  document.getElementById('nameGrp').style.display='none';
+  show('login');
 }
 
-function logout(){
-  currentUser = null; cards = {};
-  selectedSection = 'all'; batchSize = 10;
-  document.getElementById('emailInput').value = '';
-  document.getElementById('nameInput').value = '';
-  isSignup = false;
-  document.getElementById('nameGroup').style.display = 'none';
-  showScreen('login');
-}
-
-// ═══════════════════════════════════════════
-// SPACED REP
-// ═══════════════════════════════════════════
-const INTERVALS = { easy:7, medium:3, hard:1 };
-function isDue(c){ return !c || new Date() >= new Date(c.nextDue); }
-function getDue(){ return Q.filter(q => isDue(cards[q.id])); }
-function getMastered(){ return Object.values(cards).filter(c => c.interval >= 7).length; }
-
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 // HOME
-// ═══════════════════════════════════════════
-let selectedSection = 'all';
-let batchSize = 10;
+// ═══════════════════════════════════
+let sec='all';
 
-function selectSection(sec){
-  selectedSection = sec;
-  document.querySelectorAll('.sec-card').forEach(c => c.classList.remove('sel'));
-  document.getElementById('sec-' + sec).classList.add('sel');
+function enterHome(){ renderHome(); show('home'); }
+
+function renderHome(){
+  document.getElementById('chipName').textContent = U.name;
+  document.getElementById('stAttempted').textContent = U.totalAttempted;
+  document.getElementById('stBest').textContent = U.bestScore!==null ? U.bestScore+'%' : '—';
+  document.getElementById('stFailed').textContent = U.failBank.size;
+  const hasFails = U.failBank.size > 0;
+  const fb = document.getElementById('failBanner');
+  fb.className = 'fail-banner' + (hasFails ? ' show' : '');
+  document.getElementById('fbNum').textContent = U.failBank.size;
+  document.getElementById('retryBtn').style.display = hasFails ? 'flex' : 'none';
+  updateMaxQ();
 }
 
-function setBatch(n, btn){
-  batchSize = n;
-  document.querySelectorAll('.b-btn').forEach(b => b.classList.remove('sel'));
-  btn.classList.add('sel');
+function goHome(){ renderHome(); show('home'); }
+
+function pickSec(s,el){
+  sec=s;
+  document.querySelectorAll('.secbtn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  updateMaxQ();
 }
 
-function updateHome(){
-  document.getElementById('dueCount').textContent = getDue().length;
-  document.getElementById('masteredCount').textContent = getMastered();
-  const eDone = Q.filter(q => q.s==='english' && cards[q.id] && cards[q.id].interval >= 1).length;
-  const lDone = Q.filter(q => q.s==='library' && cards[q.id] && cards[q.id].interval >= 1).length;
-  document.getElementById('pb-english').style.width = Math.round(eDone/150*100)+'%';
-  document.getElementById('pb-library').style.width = Math.round(lDone/100*100)+'%';
+function getPool(retry){
+  if(retry) return ALL.filter(q=>U.failBank.has(q.id));
+  if(sec==='all') return ALL;
+  return ALL.filter(q=>q.s===sec);
 }
 
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+const UNIT_NAMES = {
+  u1:'Nigerian History & Culture to 1800', u2:'Nigeria Under Colonial Rule',
+  u3:'Evolution of Nigeria as a Political Unit', u4:'Nation Building Challenges',
+  u5:'Trade & Economics of Self-Reliance', u6:'Social Justice & National Development',
+  u7:'Judiciary & Fundamental Rights', u8:'Individual Norms & Values',
+  u9:'Cultism, Kidnapping & Social Vices', u10:'Re-orientation & National Values',
+  u11:'Re-orientation Strategies', u12:'Current Socio-Political Developments'
+};
+function unitLabel(s, short){
+  if(short) return s.replace('u','Unit ');
+  return UNIT_NAMES[s] || s;
 }
 
-function goHome(){ updateHome(); showScreen('home'); }
-
-// ═══════════════════════════════════════════
-// QUIZ
-// ═══════════════════════════════════════════
-let batch=[], idx=0, answered=false, correct=0, wrong=0, streak=0, wrongList=[];
-
-function shuffle(arr){ return [...arr].sort(()=>Math.random()-.5); }
-
-function buildBatch(pool){
-  pool = shuffle(pool);
-  const n = batchSize === 0 ? pool.length : Math.min(batchSize, pool.length);
-  return pool.slice(0, n);
+function updateMaxQ(){
+  const n = getPool(false).length;
+  document.getElementById('maxQ').textContent=n;
+  const inp=document.getElementById('qNum');
+  if(parseInt(inp.value)>n) inp.value=n;
 }
 
-function startQuiz(){
-  let pool = Q;
-  if (selectedSection !== 'all') pool = pool.filter(q => q.s === selectedSection);
-  batch = buildBatch(pool);
-  reset(); showScreen('quiz'); loadQ();
+// ═══════════════════════════════════
+// QUIZ ENGINE
+// ═══════════════════════════════════
+let batch=[],ci=0,ans=[],timerSecs=0,timerID=null;
+
+function shuffle(a){ return [...a].sort(()=>Math.random()-.5); }
+
+function startQuiz(retry){
+  const pool = getPool(retry);
+  if(!pool.length){ toast('No questions available!'); return; }
+  const n = Math.max(1, Math.min(parseInt(document.getElementById('qNum').value)||20, pool.length));
+  const t = Math.max(1, Math.min(180, parseInt(document.getElementById('qTime').value)||20));
+  batch   = shuffle(pool).slice(0,n);
+  ci      = 0;
+  ans     = new Array(n).fill(null);
+  timerSecs = t*60;
+  show('quiz');
+  renderQ();
+  runTimer();
 }
 
-function startDue(){
-  let pool = getDue();
-  if (selectedSection !== 'all') pool = pool.filter(q => q.s === selectedSection);
-  if (!pool.length){ alert('No questions due right now! 🎉'); return; }
-  batch = buildBatch(pool);
-  reset(); showScreen('quiz'); loadQ();
-}
+function renderQ(){
+  const q=batch[ci], tot=batch.length;
+  document.getElementById('qSec').textContent   = unitLabel(q.s);
+  document.getElementById('qProg').textContent  = `Q ${ci+1} / ${tot}`;
+  document.getElementById('pFill').style.width  = (ci/tot*100)+'%';
+  document.getElementById('qBadge').innerHTML   = `Q${q.id} <span class="qtag">${unitLabel(q.s,true)}</span>`;
+  document.getElementById('qText').textContent  = q.t;
 
-function retryWrong(){
-  if (!wrongList.length){ goHome(); return; }
-  batch = shuffle(wrongList);
-  reset(); showScreen('quiz'); loadQ();
-}
-
-function reset(){ idx=0; correct=0; wrong=0; streak=0; wrongList=[]; answered=false; }
-
-function loadQ(){
-  const q = batch[idx];
-  const total = batch.length;
-  document.getElementById('qSecTitle').textContent = q.s==='english' ? 'Communication English' : 'Use of Library';
-  document.getElementById('qProgText').textContent = `Q ${idx+1} / ${total}`;
-  document.getElementById('progFill').style.width = (idx/total*100)+'%';
-  document.getElementById('streakChip').textContent = '🔥 '+streak;
-  document.getElementById('qNum').innerHTML = `Q${q.id} <span class="q-tag">${q.s==='english'?'English':'Library'}</span>`;
-  document.getElementById('qText').textContent = q.t;
-
-  const grid = document.getElementById('optsGrid');
-  grid.innerHTML = '';
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML='';
   ['A','B','C','D'].forEach((lbl,i)=>{
-    const btn = document.createElement('button');
-    btn.className = 'opt';
-    btn.innerHTML = `<span class="opt-lbl">${lbl}</span><span>${q.o[i]}</span>`;
-    btn.onclick = () => pick(i, q);
-    grid.appendChild(btn);
+    const b=document.createElement('button');
+    b.className='opt';
+    b.innerHTML=`<span class="olbl">${lbl}</span><span>${q.o[i]}</span>`;
+    b.addEventListener('click',()=>pickAns(i,q));
+    optsEl.appendChild(b);
   });
 
-  document.getElementById('fbBox').className = 'fb-box';
-  document.getElementById('rateRow').className = 'rate-row';
-  document.getElementById('nxtBtn').disabled = true;
-  answered = false;
+  const nb=document.getElementById('nxtBtn');
+  nb.disabled=true;
+  nb.textContent=ci===batch.length-1?'Finish Quiz ✓':'Next →';
 }
 
-function pick(chosen, q){
-  if (answered) return;
-  answered = true;
-  document.querySelectorAll('.opt').forEach(b => b.disabled = true);
-  document.querySelectorAll('.opt')[q.a].classList.add('correct');
-  const fb = document.getElementById('fbBox');
-  if (chosen === q.a){
-    correct++; streak++;
-    fb.className = 'fb-box fb-correct show';
-    document.getElementById('fbLbl').textContent = '✓ Correct!';
-    document.getElementById('fbTxt').textContent  = 'Well done, keep going!';
-  } else {
-    wrong++; streak = 0;
-    document.querySelectorAll('.opt')[chosen].classList.add('wrong');
-    fb.className = 'fb-box fb-wrong show';
-    document.getElementById('fbLbl').textContent = '✗ Wrong';
-    document.getElementById('fbTxt').textContent = `Correct: ${String.fromCharCode(65+q.a)}. ${q.o[q.a]}`;
-    if (!wrongList.find(w => w.id === q.id)) wrongList.push(q);
+function pickAns(chosen,q){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  ans[ci]=chosen;
+  const all=document.querySelectorAll('.opt');
+  all[q.a].classList.add('correct');
+  if(chosen!==q.a) all[chosen].classList.add('wrong');
+  document.getElementById('nxtBtn').disabled=false;
+}
+
+function skipQ(){ ans[ci]=null; advance(); }
+function nextQ(){ advance(); }
+function advance(){ if(ci>=batch.length-1){endQuiz();return;} ci++; renderQ(); }
+
+function runTimer(){
+  clearInterval(timerID);
+  renderTimer();
+  timerID=setInterval(()=>{
+    timerSecs--;
+    renderTimer();
+    if(timerSecs<=0){clearInterval(timerID);endQuiz();}
+  },1000);
+}
+
+function renderTimer(){
+  const m=Math.floor(timerSecs/60),s=timerSecs%60;
+  const el=document.getElementById('timer');
+  el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.className='timer';
+  if(timerSecs<=60) el.classList.add('hot');
+  else if(timerSecs<=180) el.classList.add('warn');
+}
+
+function exitQuiz(){
+  if(confirm('Exit quiz? Progress for this session will be lost.')){
+    clearInterval(timerID);
+    goHome();
   }
-  document.getElementById('streakChip').textContent = '🔥 '+streak;
-  document.getElementById('rateRow').className = 'rate-row show';
-  document.getElementById('nxtBtn').disabled = false;
 }
 
-function rate(r){
-  const q = batch[idx];
-  const d = new Date();
-  d.setDate(d.getDate() + INTERVALS[r]);
-  cards[q.id] = { interval: INTERVALS[r], nextDue: d.toISOString() };
-  saveUser();
-  next();
+// ═══════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════
+let sessionFailed=[];
+
+function endQuiz(){
+  clearInterval(timerID);
+  let correct=0,wrong=0,skipped=0;
+  sessionFailed=[];
+
+  batch.forEach((q,i)=>{
+    const a=ans[i];
+    if(a===null){
+      skipped++;
+      U.failBank.add(q.id);
+      sessionFailed.push({q,userAns:null});
+    } else if(a===q.a){
+      correct++;
+      U.failBank.delete(q.id); // mastered — remove from fail bank
+    } else {
+      wrong++;
+      U.failBank.add(q.id);
+      sessionFailed.push({q,userAns:a});
+    }
+  });
+
+  const total=batch.length;
+  const score=Math.round(correct/total*100);
+  U.totalAttempted+=total;
+  if(U.bestScore===null||score>U.bestScore) U.bestScore=score;
+  U.history.push({date:new Date().toISOString(),score,total,correct,wrong,skipped});
+  saveU(); // persist everything
+
+  document.getElementById('rC').textContent=correct;
+  document.getElementById('rW').textContent=wrong;
+  document.getElementById('rSk').textContent=skipped;
+  document.getElementById('rS').textContent=score+'%';
+
+  let emoji='😅',title='Keep Practicing!';
+  if(score===100){emoji='🏆';title='Perfect Score!';}
+  else if(score>=80){emoji='🔥';title='Excellent!';}
+  else if(score>=65){emoji='💪';title='Good Job!';}
+  else if(score>=50){emoji='📖';title='Keep Studying!';}
+
+  document.getElementById('rEmoji').textContent=emoji;
+  document.getElementById('rTitle').textContent=title;
+  document.getElementById('rSub').textContent=`You scored ${score}% — ${correct} correct out of ${total}`;
+
+  const fp=document.getElementById('failPill');
+  const rr=document.getElementById('reRetryBtn');
+  if(sessionFailed.length>0){
+    fp.classList.add('show');
+    document.getElementById('fpNum').textContent=sessionFailed.length;
+    rr.style.display='flex';
+  } else {
+    fp.classList.remove('show');
+    rr.style.display='none';
+  }
+
+  show('results');
 }
 
-function skip(){ answered = false; next(); }
+// ═══════════════════════════════════
+// CORRECTIONS
+// ═══════════════════════════════════
+function goCorrections(){
+  const body=document.getElementById('cBody');
+  body.innerHTML='';
+  document.getElementById('cCount').textContent=sessionFailed.length+(sessionFailed.length===1?' question':' questions');
 
-function next(){
-  idx++;
-  if (idx >= batch.length){ showResults(); return; }
-  loadQ();
+  if(!sessionFailed.length){
+    body.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:14px">🎉 No corrections! You got everything right.</div>';
+    show('corrections'); return;
+  }
+
+  const lbls=['A','B','C','D'];
+  sessionFailed.forEach(({q,userAns},idx)=>{
+    const item=document.createElement('div');
+    item.className='citem';
+    item.style.animationDelay=(idx*.05)+'s';
+
+    const head=document.createElement('div');
+    head.className='chead';
+    head.innerHTML=`
+      <div class="cqbadge">Q${q.id} <span class="cqtag">${unitLabel(q.s,true)}</span></div>
+      <div class="cqtext">${q.t}</div>
+      ${userAns===null?'<div class="skip-tag">⏭ Skipped</div>':''}
+    `;
+    item.appendChild(head);
+
+    const optsEl=document.createElement('div');
+    optsEl.className='copts';
+    q.o.forEach((opt,i)=>{
+      const row=document.createElement('div');
+      row.className='copt';
+      const isRight=i===q.a;
+      const isYours=i===userAns&&userAns!==q.a;
+      row.classList.add(isRight?'right':isYours?'yours':'dim');
+      row.innerHTML=`<span class="clbl">${lbls[i]}</span><span>${opt}${isRight?' ✓':''}${isYours?' ✗':''}</span>`;
+      optsEl.appendChild(row);
+    });
+    item.appendChild(optsEl);
+    body.appendChild(item);
+  });
+  show('corrections');
 }
 
-function showResults(){
-  const total = batch.length;
-  const score = total ? Math.round(correct/total*100) : 0;
-  document.getElementById('resCorrect').textContent = correct;
-  document.getElementById('resWrong').textContent   = wrong;
-  document.getElementById('resScore').textContent   = score+'%';
-  let emoji='😅', title='Keep Practicing!';
-  if(score>=90){emoji='🏆';title='Outstanding!';}
-  else if(score>=75){emoji='🔥';title='Great Work!';}
-  else if(score>=60){emoji='💪';title='Good Job!';}
-  else if(score>=40){emoji='📖';title='Keep Studying!';}
-  document.getElementById('resEmoji').textContent = emoji;
-  document.getElementById('resTitle').textContent = title;
-  document.getElementById('resSub').textContent   = `You scored ${score}% on ${total} questions`;
-  document.getElementById('srsText').textContent  =
-    `${wrongList.length} hard question(s) queued. Hard→1 day · Medium→3 days · Easy→7 days.`;
-  showScreen('results');
+// ═══════════════════════════════════
+// UTILS
+// ═══════════════════════════════════
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
 }
 
-// ═══════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════
-function showToast(){
-  const t = document.getElementById('toast');
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2200);
+let toastTimer=null;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2500);
 }
-
-// Enter key on login
-document.getElementById('emailInput').addEventListener('keydown', e => { if(e.key==='Enter') handleAuth(); });
-document.getElementById('nameInput').addEventListener('keydown',  e => { if(e.key==='Enter') handleAuth(); });
 </script>
 </body>
 </html>
